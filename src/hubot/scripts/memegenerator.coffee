@@ -11,7 +11,6 @@ memes =
    scumbag: { generator: 142, image: 366130 }
    butthurt: { generator: 31, image: 1438 }
    yodawg: { generator: 79, image: 108785 }
-   maagd: { generator: 270900, image: 1859478 }
 
 
 module.exports = (robot) ->

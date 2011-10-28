@@ -5,9 +5,6 @@
 # what is my freckle token - todo
 
 module.exports = (robot) ->
-  robot.hear /^maa+gd$/, (msg) ->
-    setTimeout (() -> msg.reply "Zijde gij nog maagd of wat?"), 2000
-
 
   robot.respond /(?:freckle\s+token|set\s+my\s+freckle\s+token\s+to)\s+(.*)/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle

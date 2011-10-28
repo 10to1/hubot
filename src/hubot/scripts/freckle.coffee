@@ -5,23 +5,26 @@
 # what is my freckle token - todo
 
 module.exports = (robot) ->
-  robot.respond /set\s+my\s+freckle\s+token\s+to\s+(.*)/i, (msg) ->
+  robot.respond /(?:freckle\s+token|set\s+my\s+freckle\s+token\s+to)\s+(.*)/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    robot.brain.data.freckle[msg.message.user.name] = msg.match[1]
+    robot.brain.data.freckle[msg.message.user.name] = "#{msg.match[1]}"
     msg.send "Okay, I'll remember your freckle token."
 
-  robot.respond /forget\s+my\s+freckle\s+token/i, (msg) ->
+
+  robot.respond /(?:freckle\s+token\s+clear|forget\s+my\s+freckle\s+token)/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
     robot.brain.data.freckle[msg.message.user.name] = null
     msg.send 'Okay, I forgot your freckle token.'
 
-  robot.respond /what\s+is\s+my\s+freckle\s+token\??/i, (msg) ->
+
+  robot.respond /(?:freckle\stoken|what\s+is\s+my\s+freckle\s+token)\??/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
     freckle = robot.brain.data.freckle[msg.message.user.name]
     if freckle
-      msg.send "Your freckle token in #{freckle}"
+      msg.send "Your freckle token is #{freckle}"
     else
       msg.send 'I don\'t know your freckle token.'
+
 
   robot.respond /freckle(\s+sorted)?\s+projects\??/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
@@ -45,6 +48,7 @@ module.exports = (robot) ->
         list = ""
         projects = eval body
         if msg.match[1]
+          # is "sorted" is passed, sort by minutes descending. Otherwise, sort alphabetically.
           projects.sort (a,b) ->
             return -1 if a.project.minutes > b.project.minutes
             return 1 if a.project.minutes < b.project.minutes
@@ -55,12 +59,12 @@ module.exports = (robot) ->
             return -1 if a.project.name < b.project.name
             return 0
 
+        # generate the list of projects
         for project in projects
           if project.project.enabled
             list += "- #{project.project.name}"
             list += "*" unless project.project.billable
             list += ": "
-            list += "#{project.project.minutes} "
             if project.project.minutes > 0
               minutes = project.project.minutes % 60
               hours = Math.floor((project.project.minutes) / 60)

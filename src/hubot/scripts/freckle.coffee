@@ -5,23 +5,27 @@
 # what is my freckle token - todo
 
 module.exports = (robot) ->
-  robot.hear /#maa+gd/, (msg) ->
+  robot.hear /^maa+gd$/, (msg) ->
     setTimeout (() -> msg.reply "Zijde gij nog maagd of wat?"), 2000
 
 
   robot.respond /(?:freckle\s+token|set\s+my\s+freckle\s+token\s+to)\s+(.*)/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    robot.brain.data.freckle[msg.message.user.name] = "#{msg.match[1]}"
-    msg.send "Okay, I'll remember your freckle token."
+    if match[1] == "clear"
+      robot.brain.data.freckle[msg.message.user.name] = null
+      msg.send 'Okay, I forgot your freckle token.'
+    else
+      robot.brain.data.freckle[msg.message.user.name] = "#{msg.match[1]}"
+      msg.send "Okay, I'll remember your freckle token."
 
 
-  robot.respond /(?:freckle\s+token\s+clear|forget\s+my\s+freckle\s+token)/i, (msg) ->
+  robot.respond /(?:freckle\s+token\s+clear$|forget\s+my\s+freckle\s+token)/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
     robot.brain.data.freckle[msg.message.user.name] = null
     msg.send 'Okay, I forgot your freckle token.'
 
 
-  robot.respond /(?:freckle\stoken|what\s+is\s+my\s+freckle\s+token)\??/i, (msg) ->
+  robot.respond /(?:freckle\stoken$|what\s+is\s+my\s+freckle\s+token)\??/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
     freckle = robot.brain.data.freckle[msg.message.user.name]
     if freckle

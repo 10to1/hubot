@@ -7,9 +7,8 @@
 module.exports = (robot) ->
   robot.respond /set\s+my\s+freckle\s+token\s+to\s+(.*)/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    msg.send msg.message.user
     robot.brain.data.freckle[msg.message.user.name] = msg.match[1]
-    msg.send 'Okay, I\'ll remember your freckle token.'
+    msg.send "Okay, I'll remember your freckle token."
 
   robot.respond /forget\s+my\s+freckle\s+token/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle

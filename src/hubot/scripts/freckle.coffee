@@ -1,8 +1,8 @@
 # Freckle integration for hubot
 #
-# set my freckle token to <token>
-# forget my freckle token
-# what is my freckle token
+# set my freckle token to <token> - todo
+# forget my freckle token - todo
+# what is my freckle token - todo
 
 module.exports = (robot) ->
   robot.respond /set\s+my\s+freckle\s+token\s+to\s+(.*)/i, (msg) ->

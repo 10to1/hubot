@@ -33,23 +33,11 @@ class FreckleHandler
 
 class FreckleRequest
 
-  constructor: (type, robot, msg) ->
+  constructor: (robot, msg) ->
     @robot = robot
     @msg = msg
     @handler = new FreckleHandler @robot, @msg
 
-    domain = process.env.HUBOT_FRECKLE_TOKEN
-    domain = "10to1"
-
-    if domain?
-      @url = "http://#{domain}.letsfreckle.com/api/#{type}.json"
-    else
-      msg.send "There's no freckle domain set up. Specify HUBOT_FRECKLE_DOMAIN first."
-      @url = null
-
-
-    unless @handler.token?
-      msg.send "There's no freckle token set up. Add your token first."
 
 #    robot.brain.data.freckle = {} unless robot.brain.data.freckle
 #    freckle = robot.brain.data.freckle[msg.message.user.name]
@@ -57,13 +45,26 @@ class FreckleRequest
 #      msg.send "You need to give me your freckle token first. Use 'set my freckle token to <token>'"
 #      return
 
-  create: ->
+  create:(type) ->
+    domain = process.env.HUBOT_FRECKLE_TOKEN
+    domain = "10to1"
+
+    unless domain?
+      msg.send "There's no freckle domain set up. Specify HUBOT_FRECKLE_DOMAIN first."
+      return null
+
+    unless @handler.token?
+      msg.send "There's no freckle token set up. Add your token first."
+      return null
+
+    url = "http://#{domain}.letsfreckle.com/api/#{type}.json"
+    @msg.send url
     @msg
-      .http(@url)
+      .http(url)
       .headers('X-FreckleToken': @handler.token())
 
   get_projects: ->
-    req = @create()
+    req = @create("projects")
     msg = @msg
     (callback) ->
       req
@@ -102,7 +103,7 @@ module.exports = (robot) ->
 
 
   robot.respond /freckle(\s+sorted)?\s+projects\??/i, (msg) ->
-    request = new FreckleRequest "projects", robot, msg
+    request = new FreckleRequest robot, msg
     request.get_projects() (projects) ->
       if msg.match[1]
         # is "sorted" is passed, sort by minutes descending. Otherwise, sort alphabetically.
@@ -141,7 +142,7 @@ module.exports = (robot) ->
 
 
   robot.respond /freckle\s+add\s+(.+)\s+to\s+(.+)\s+(?:for|on|as|doing)\s+(.+)/i, (msg) ->
-    request = new FreckleRequest "entries", robot, msg
+    request = new FreckleRequest robot, msg
     time = msg.match[1]
     proj = msg.match[2]
     desc = msg.match[3]
@@ -149,8 +150,11 @@ module.exports = (robot) ->
     request.get_projects() (projects) ->
       for project in projects
         if project.project.name == proj
-          request.create()
-            .post({ minutes: time, user: request.handler().email(), 'project-id':project.project.id, description:desc }) (err, res, body) ->
+          reqBody = JSON.stringify({ entry: { minutes: time, user: request.handler.email(), 'project-id':project.project.id, description:desc }})
+          msg.send reqBody
+          request.create("entries")
+            .headers({ 'Content-Type': 'text/json', 'Content-length': reqBody.length })
+            .post(reqBody) (err, res, body) ->
               msg.send err
               msg.send res
               msg.send body

@@ -4,52 +4,136 @@
 # forget my freckle token - todo
 # what is my freckle token - todo
 
-module.exports = (robot) ->
+class FreckleHandler
 
-  robot.respond /(?:freckle\s+token|set\s+my\s+freckle\s+token\s+to)\s+(.*)/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    if msg.match[1] == "clear"
-      robot.brain.data.freckle[msg.message.user.name] = null
-      msg.send 'Okay, I forgot your freckle token.'
+  constructor: (robot, msg) ->
+    @robot = robot
+    @msg = msg
+
+  set_token: (token) ->
+    @get_freckle().token = token
+
+  token: ->
+    @get_freckle().token
+
+  set_email: (email) ->
+    @get_freckle().email = email
+    if email?
+      request = new FreckleRequest "users", robot, msg
+
+      request
+        .create()
+        .get() (err, res, body) ->
+          users = eval body
+          @msg.send users
+          for user in users
+            @msg.send user
     else
-      robot.brain.data.freckle[msg.message.user.name] = "#{msg.match[1]}"
-      msg.send "Okay, I'll remember your freckle token."
+      @get_freckle().userid = nil
+
+  email: ->
+    @get_freckle().email
+
+  get_freckle: ->
+    @robot.brain.data.freckle = {} unless @robot.brain.data.freckle
+    @robot.brain.data.freckle[@msg.message.user.name]
 
 
-  robot.respond /(?:freckle\s+token\s+clear$|forget\s+my\s+freckle\s+token)/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    robot.brain.data.freckle[msg.message.user.name] = null
-    msg.send 'Okay, I forgot your freckle token.'
+class FreckleRequest
 
+  constructor: (type, robot, msg) ->
+    @robot = robot
+    @msg = msg
 
-  robot.respond /(?:freckle\stoken$|what\s+is\s+my\s+freckle\s+token)\??/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    freckle = robot.brain.data.freckle[msg.message.user.name]
-    if freckle
-      msg.send "Your freckle token is #{freckle}"
+    domain = process.env.HUBOT_FRECKLE_DOMAIN
+    if domain
+      msg.send "There's no freckle domain set up. Specify HUBOT_FRECKLE_DOMAIN first."
+      @url = null
     else
-      msg.send 'I don\'t know your freckle token.'
+      @url = "http://#{domain}.letsfreckle.com/api/#{type}.json"
 
-
-  robot.respond /freckle(\s+sorted)?\s+projects\??/i, (msg) ->
     robot.brain.data.freckle = {} unless robot.brain.data.freckle
     freckle = robot.brain.data.freckle[msg.message.user.name]
     unless freckle
       msg.send "You need to give me your freckle token first. Use 'set my freckle token to <token>'"
       return
 
-    domain = process.env.HUBOT_FRECKLE_DOMAIN
-    domain = "10to1"
+  create:(callback) ->
+    handler = new FreckleHandler @robot, @msg
+    @msg
+      .http(@url)
+      .headers('X-FreckleToken': handler.token())
 
-    unless domain
-      msg.send "There's no freckle domain set up. Specify HUBOT_FRECKLE_DOMAIN first."
-      return
 
-    msg
-      .http("http://#{domain}.letsfreckle.com/api/projects.json")
-      .headers
-        'X-FreckleToken': freckle
+module.exports = (robot) ->
+
+  robot.respond /(?:freckle\s+token|set\s+my\s+freckle\s+token\s+to)\s+(.*)/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    if msg.match[1] == "clear"
+      handler.set_token null
+      msg.send 'Okay, I forgot your freckle token.'
+    else
+      handler.set_token "#{msg.match[1]}"
+      msg.send "Okay, I'll remember your freckle token."
+
+
+  robot.respond /(?:freckle\s+token\s+clear$|forget\s+my\s+freckle\s+token)/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    handler.set_token null
+    msg.send 'Okay, I forgot your freckle token.'
+
+
+  robot.respond /(?:freckle\stoken$|what\s+is\s+my\s+freckle\s+token)\??/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    if handler.token()
+      msg.send "Your freckle token is #{handler.token()}"
+    else
+      msg.send 'I don\'t know your freckle token.'
+
+
+  robot.respond /(?:freckle\s+email|set\s+my\s+freckle\s+email\s+to)\s+(.*)/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    if msg.match[1] == "clear"
+      handler.set_email null
+      msg.send 'Okay, I forgot your freckle email.'
+    else
+      handler.set_email "#{msg.match[1]}"
+      msg.send "Okay, I'll remember your freckle email."
+
+
+  robot.respond /(?:freckle\s+email\s+clear$|forget\s+my\s+freckle\s+email)/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    handler.set_email null
+    msg.send 'Okay, I forgot your freckle email.'
+
+
+  robot.respond /(?:freckle\s+email|what\s+is\s+my\s+freckle\s+email)\??/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    if handler.email()
+      msg.send "Your freckle email is #{handler.email()}"
+    else
+      msg.send 'I don\'t know your freckle email.'
+
+
+  robot.respond /freckle\s+info/i, (msg) ->
+    handler = new FreckleHandler robot, msg
+    if handler.email()
+      msg.send "Your freckle email is #{handler.email()}"
+    else
+      msg.send 'I don\'t know your freckle email.'
+    if handler.token()
+      msg.send "Your freckle token is #{handler.token()}"
+    else
+      msg.send 'I don\'t know your freckle token.'
+
+
+  robot.respond /freckle(\s+sorted)?\s+projects\??/i, (msg) ->
+    request = new FreckleRequest "projects", robot, msg
+
+    request
+      .create()
       .get() (err, res, body) ->
+        msg.send body
         list = ""
         projects = eval body
         if msg.match[1]
@@ -88,20 +172,10 @@ module.exports = (robot) ->
 
 
   robot.respond /freckle\s+add\s+(.+)\s+to\s+(.+)\s+(?:for|on|as|doing)\s+(.+)/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    freckle = robot.brain.data.freckle[msg.message.user.name]
-    unless freckle
-      msg.send "You need to give me your freckle token first. Use 'set my freckle token to <token>'"
-      return
+    request = new FreckleRequest "projects", robot, msg
 
-    domain = process.env.HUBOT_FRECKLE_DOMAIN
-    domain = "10to1"
-
-    unless domain
-      msg.send "There's no freckle domain set up. Specify HUBOT_FRECKLE_DOMAIN first."
-      return
-
-    msg
+    request
+      .create()
       .http("http://#{domain}.letsfreckle.com/api/projects.json")
       .query
         hl: 'en'

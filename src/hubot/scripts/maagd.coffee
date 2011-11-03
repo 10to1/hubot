@@ -1,5 +1,6 @@
 module.exports = (robot) ->
   robot.hear /\bmaa+gd\b/, (msg) ->
-    setTimeout (() -> msg.reply "Zijde gij nog maagd of wat?"), 2000
+    if msg.message.user.name != "HUBOT"
+      msg.reply "Zijde gij nog maagd of wat?"
 
 

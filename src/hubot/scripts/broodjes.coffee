@@ -98,7 +98,7 @@ module.exports = (robot) ->
           text = "Bestelling voor 10to1\n\n---\n\nLeveradres: Prins Boudewijnlaan 5, 2550 Kontich\n"
           for broodje in formatted_broodjes
             text += "\n------------------------------------------------------------------------------------------\n" 
-            text += sprintf("|  %-30.30s  |  %-50.50s  |", broodje["name"], broodje["broodje"])
+            text += sprintf("%-30.30s - %-50.50s", broodje["name"], broodje["broodje"])
           text += "\n-------------------------------------------------------------------------------------------\n" 
           nodemailer.send_mail
               to : env.BROODJES_EMAIL,

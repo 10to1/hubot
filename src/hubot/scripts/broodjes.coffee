@@ -95,9 +95,9 @@ module.exports = (robot) ->
                 "name": robot.brain.data.users[userid].name
       if formatted_broodjes.length > 0
           msg.send "A la minute emailen..."
-          text = "Bestelling voor 10to1\n\n---\n\nLeveradres: Prins Boudewijnlaan 5, 2550 Kontich\n\n"
+          text = "Bestelling voor 10to1\n\n---\n\nLeveradres: Prins Boudewijnlaan 5, 2550 Kontich\n"
           for broodje in formatted_broodjes
-            text += "------------------------------------------------------------------------------------------\n" 
+            text += "\n------------------------------------------------------------------------------------------\n" 
             text += sprintf("|  %-30.30s  |  %-50.50s  |", broodje["name"], broodje["broodje"])
           text += "\n-------------------------------------------------------------------------------------------\n" 
           nodemailer.send_mail

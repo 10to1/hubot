@@ -31,7 +31,7 @@ exports.danger = (helper, cb) ->
 
 class Helper extends Robot
   constructor: (path) ->
-    super path, 'helper', Robot.Brain
+    super path, 'helper'
     @sent = []
     @Response = Helper.Response
 
@@ -49,8 +49,9 @@ class Helper extends Robot
     user = new Robot.User 1, 'helper'
     super new Robot.TextMessage(user, text)
 
-class Helper.Response extends Robot.Response
-  # This changes ever HTTP request to hit the danger server above
-  http: (url) ->
-    super(url).host('127.0.0.1').port(9001)
+if not process.env.HUBOT_LIVE
+  class Helper.Response extends Robot.Response
+    # This changes ever HTTP request to hit the danger server above
+    http: (url) ->
+      super(url).host('127.0.0.1').port(9001)
 

@@ -5,7 +5,11 @@
 # voor mij geen broodje - Remove your order from today
 # geen broodjes - Remove todays orders
 # bestel een <broodje> - Order a broodje for today
+# bestel alle broodjes - Send an order email to a la minute
 #
+sprintf = require('sprintf').sprintf
+
+env = process.env
 
 class Sandwicher
 
@@ -61,6 +65,55 @@ module.exports = (robot) ->
       msg.send "#{msg.message.user.name} gaat straks een #{broodje} eten"
 
   robot.respond /broodjes/i, (msg) ->
+    contains_broodjes = list_broodjes(msg)
+    if !contains_broodjes
+        msg.send "Er zijn nog geen broodjes ingegeven voor vandaag"
+
+  robot.respond /bestel alle broodjes$/i, (msg) ->
+    contains_broodjes = list_broodjes(msg)
+    if contains_broodjes
+        msg.send "Als je de mail wil versturen bevestig dan met dit command 'bestel alle broodjes!!'"
+    else
+        msg.send "Er moeten vandaag geen broodjes besteld worden!"
+
+  robot.respond /bestel alle broodjes!!/i, (msg) ->
+      nodemailer= require("nodemailer");
+      nodemailer.SMTP = 
+        host: 'smtp.gmail.com',
+        port: 465,
+        ssl: true,
+        use_authentication: true,
+        user: env.GMAIL_SCANNER_USER,
+        pass: env.GMAIL_SCANNER_PASSWORD
+      sandwicher = new Sandwicher robot, msg
+      broodjes = sandwicher.broodjes_for_today() 
+      formatted_broodjes = []
+      for userid, broodje of broodjes
+          if broodje != null
+              formatted_broodjes.push 
+                "broodje": broodje, 
+                "name": robot.brain.data.users[userid].name
+      if formatted_broodjes.length > 0
+          msg.send "A la minute emailen..."
+          text = "Bestelling voor 10to1\n\n---\n\nLeveradres: Prins Boudewijnlaan 5, 2550 Kontich\n"
+          for broodje in formatted_broodjes
+            text += "\n------------------------------------------------------------------------------------------\n" 
+            text += sprintf("%-30.30s - %-50.50s", broodje["name"], broodje["broodje"])
+          text += "\n-------------------------------------------------------------------------------------------\n" 
+          nodemailer.send_mail
+              to : env.BROODJES_EMAIL,
+              sender : env.GMAIL_SCANNER_USER,
+              subject : "Broodjes bestelling voor 10to1",
+              body: text
+              , (err, success) ->
+                  if success?
+                    msg.send "De broodjes zijn besteld! BOOYAH!"
+                  else
+                    msg.send err
+      else
+        msg.send "Er zijn geen broodjes ingegeven!"
+    
+  list_broodjes = (msg) ->
     sandwicher = new Sandwicher robot, msg
     broodjes = sandwicher.broodjes_for_today() 
     contains_broodjes = no
@@ -70,6 +123,4 @@ module.exports = (robot) ->
         else
           contains_broodjes = yes
           msg.send "#{robot.brain.data.users[userid].name}: #{broodje}"
-
-    if !contains_broodjes
-        msg.send "Stop @tom, we moeten vandaag geen broodjes hebben!"
+    return contains_broodjes

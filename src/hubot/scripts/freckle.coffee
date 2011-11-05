@@ -1,30 +1,5 @@
 # Freckle integration for hubot
 #
-<<<<<<< HEAD
-# my freckle token is <token>
-# forget my freckle token
-# what is my freckle token
-
-module.exports = (robot) ->
-  robot.respond /my freckle token is (.*)/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    msg.send msg.message.user
-    robot.brain.data.freckle[msg.message.user.name] = msg.match[1]
-    msg.send 'Okay, I\'ll remember your freckle token.'
-
-  robot.respond /forget my freckle token/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    robot.brain.data.freckle[msg.message.user.name] = null
-    msg.send 'Okay, I forgot your freckle token.'
-
-  robot.respond /what\s+is\s+my\s+freckle\s+token\??/i, (msg) ->
-    robot.brain.data.freckle = {} unless robot.brain.data.freckle
-    freckle = robot.brain.data.freckle[msg.message.user.name]
-    if freckle
-      msg.send "Your freckle token in #{freckle}"
-    else
-      msg.send 'I don\'t know your freckle token.'
-=======
 # set my freckle token to <token> - todo
 # forget my freckle token - todo
 # what is my freckle token - todo
@@ -213,5 +188,3 @@ module.exports = (robot) ->
         # Response includes non-string keys, so we can't use JSON.parse here.
         json = eval("(#{body})")
         msg.send json.rhs || 'Could not compute.'
-
->>>>>>> Reworked freckle request handling.

@@ -8,11 +8,9 @@
 # bestel alle broodjes - Send an order email to a la minute
 #
 sprintf = require('sprintf').sprintf
-
-env = process.env
+env     = process.env
 
 class Sandwicher
-
   constructor: (robot, msg) ->
     @robot = robot
     @msg = msg
@@ -21,7 +19,6 @@ class Sandwicher
     @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
     @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
     @robot.brain.data.broodjes[@today()][user.id] = broodje
-   
 
   broodjes_for_today: ->
     @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
@@ -41,8 +38,7 @@ class Sandwicher
     Math.round(date.getTime() / DAY)
 
 module.exports = (robot) ->
-
-  robot.respond /welke broodjes(\s+zijn er)?/i, (msg) ->
+  robot.respond /welke(\s+)?\sbroodjes(\s+zijn\s+er)?/i, (msg) ->
     msg.send "Geen idee! Hier is de link: http://www.alaminute.be/prijslijst.html"
 
   robot.respond /(vandaag\s+)?geen broodjes/i, (msg) ->
@@ -50,7 +46,7 @@ module.exports = (robot) ->
     broodjes = sandwicher.no_broodjes_for_today() 
     msg.send "Wa is dees? Maagden!"
 
-  robot.respond /(voor\s+mij\s+)?geen broodje/i, (msg) ->
+  robot.respond /(voor\s+mij\s+)?geen broodje(\s+voor\s+mij)?/i, (msg) ->
     sandwicher = new Sandwicher robot, msg
     broodjes = sandwicher.no_broodje_for_today(msg.message.user) 
     msg.send "Hoe? Geen broodje? Maaagd!"
@@ -69,14 +65,14 @@ module.exports = (robot) ->
     if !contains_broodjes
         msg.send "Er zijn nog geen broodjes ingegeven voor vandaag"
 
-  robot.respond /bestel alle broodjes$/i, (msg) ->
+  robot.respond /bestel(\s+alle)?\s+broodjes$/i, (msg) ->
     contains_broodjes = list_broodjes(msg)
     if contains_broodjes
         msg.send "Als je de mail wil versturen bevestig dan met dit command 'bestel alle broodjes!!'"
     else
         msg.send "Er moeten vandaag geen broodjes besteld worden!"
 
-  robot.respond /bestel alle broodjes!!/i, (msg) ->
+  robot.respond /bestel(\s+alle)?\s+broodjes!!$/i, (msg) ->
       nodemailer= require("nodemailer");
       nodemailer.SMTP = 
         host: 'smtp.gmail.com',

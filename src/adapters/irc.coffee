@@ -1,33 +1,51 @@
 Robot = require "../robot"
 Irc   = require "irc"
 
-class IrcBot extends Robot
+class IrcBot extends Robot.Adapter
   send: (user, strings...) ->
     for str in strings
-      console.log "#{user.name}: #{str}"
-      @bot.say(user.room, str)
+      if user.room
+        console.log "#{user.room} #{str}"
+        @bot.say(user.room, str)
+      else
+        console.log "#{user.name} #{str}"
+        @bot.say(user.name, str)
 
   reply: (user, strings...) ->
     for str in strings
       @send user, "#{user.name}: #{str}"
 
+  join: (channel) ->
+    self = @
+    @bot.join channel, () ->
+      console.log('joined %s', channel)
+
+  part: (channel) ->
+    @bot.part channel, () ->
+      console.log('left %s', channel)
+
   run: ->
     self = @
+
     options =
-      nick:     process.env.HUBOT_IRC_NICK
+      nick:     process.env.HUBOT_IRC_NICK or @robot.name
       port:     process.env.HUBOT_IRC_PORT
       rooms:    process.env.HUBOT_IRC_ROOMS.split(",")
       server:   process.env.HUBOT_IRC_SERVER
       password: process.env.HUBOT_IRC_PASSWORD
       nickpass: process.env.HUBOT_IRC_NICKSERV_PASSWORD
+      fakessl:  process.env.HUBOT_IRC_SERVER_FAKE_SSL or false
+      unflood:  process.env.HUBOT_IRC_UNFLOOD or false
+      debug:    process.env.HUBOT_IRC_DEBUG or false
 
-    console.log options
-
-    client_options = {
-          password: options.password,
-          debug: true,
-          port: options.port,
-        }
+    client_options =
+      password: options.password,
+      debug: options.debug,
+      port: options.port,
+      stripColors: true,
+      secure: if options.port is "6697" then true else false,
+      selfSigned: options.fakessl,
+      floodProtection: options.unflood
 
     unless options.nickpass
         client_options['channels'] = options.rooms
@@ -43,20 +61,23 @@ class IrcBot extends Robot
           bot.say 'NickServ', "identify #{options.nickpass}"
         else if options.nickpass and from is 'NickServ' and text.indexOf('now identified') isnt -1
           for room in options.rooms
-            bot.join room, ->
-              console.log('%s has joined %s', options.nick, room)
+            @join room
 
-    bot.addListener 'message', (from, toRoom, message) ->
-      console.log "From #{from} to #{toRoom}: #{message}"
+    bot.addListener 'message', (from, to, message) ->
+      console.log "From #{from} to #{to}: #{message}"
+      
+      user = self.userForName from
+      unless user?
+        id = (new Date().getTime() / 1000).toString().replace('.','')
+        user = self.userForId id
+        user.name = from
 
-      if message.match new RegExp "^#{options.nick}", "i"
-        unless user_id[from]
-          user_id[from] = next_id
-          next_id = next_id + 1
-
-      user = new Robot.User user_id[from], {
-        room: toRoom,
-      }
+      if to.match(/^[&#]/)
+        user.room = to
+        console.log "#{to} <#{from}> #{message}"
+      else
+        user.room = null
+        console.log "msg <#{from}> #{message}"
 
       self.receive new Robot.TextMessage(user, message)
 
@@ -74,6 +95,10 @@ class IrcBot extends Robot
 
     bot.addListener 'kick', (channel, who, _by, reason) ->
         console.log('%s was kicked from %s by %s: %s', who, channel, _by, reason)
+
+    bot.addListener 'invite', (channel, from) ->
+      console.log('%s invite you to join %s', from, channel)
+      bot.join channel
 
     @bot = bot
 

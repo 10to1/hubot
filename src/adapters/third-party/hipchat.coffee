@@ -1,17 +1,17 @@
-Robot        = require "../robot"
-HTTPS        = require "https"
-Wobot        = require("wobot").Bot
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-class HipChat extends Robot
+HTTPS   = require 'https'
+Wobot   = require('wobot').Bot
+
+class HipChat extends Adapter
   send: (user, strings...) ->
-    console.log "Sending"
     for str in strings
       @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
-    console.log "Replying"
     for str in strings
-      @send user, "@#{user.name} #{str}"
+      @send user, "@\"#{user.name}\" #{str}"
 
   run: ->
     self = @
@@ -21,7 +21,7 @@ class HipChat extends Robot
       name:     process.env.HUBOT_HIPCHAT_NAME or "#{self.name} Bot"
       password: process.env.HUBOT_HIPCHAT_PASSWORD
       rooms:    process.env.HUBOT_HIPCHAT_ROOMS or "@All"
-    
+
     console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
     mention = new RegExp("@#{@options.name.split(' ')[0]}\\b", "i")
@@ -126,5 +126,6 @@ class HipChat extends Robot
       console.log err.stack
       callback err
 
-module.exports = HipChat
+exports.use = (robot) ->
+  new HipChat robot
 

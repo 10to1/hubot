@@ -1,11 +1,15 @@
-Robot = require '../robot'
-Xmpp  = require 'node-xmpp'
+Robot   = require('hubot').robot()
+Adapter = require('hubot').adapter()
 
-class XmppBot extends Robot.Adapter
+Xmpp    = require 'node-xmpp'
+
+class XmppBot extends Adapter
   run: ->
     options =
       username: process.env.HUBOT_XMPP_USERNAME
       password: process.env.HUBOT_XMPP_PASSWORD
+      host: process.env.HUBOT_XMPP_HOST
+      port: process.env.HUBOT_XMPP_PORT
       rooms:    @parseRooms process.env.HUBOT_XMPP_ROOMS.split(',')
       keepaliveInterval: 30000 # ms interval to send whitespace to xmpp server
 
@@ -14,6 +18,8 @@ class XmppBot extends Robot.Adapter
     @client = new Xmpp.Client
       jid: options.username
       password: options.password
+      host: options.host
+      port: options.port
 
     @client.on 'error', @.error
     @client.on 'online', @.online
@@ -84,6 +90,9 @@ class XmppBot extends Robot.Adapter
       message = body.getText()
 
       [room, from] = stanza.attrs.from.split '/'
+      
+      # ignore our own messages in rooms
+      return if from == @robot.username
 
       # note that 'from' isn't a full JID, just the local user part
       user = @userForId from
@@ -173,5 +182,6 @@ class XmppBot extends Robot.Adapter
 
     @client.send message
 
-module.exports = XmppBot
+exports.use = (robot) ->
+  new XmppBot robot
 

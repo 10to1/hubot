@@ -1,8 +1,10 @@
-Robot        = require "../robot"
-HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
+Robot        = require '../robot'
+Adapter      = require '../adapter'
 
-class Campfire extends Robot.Adapter
+HTTPS        = require 'https'
+EventEmitter = require('events').EventEmitter
+
+class Campfire extends Adapter
   send: (user, strings...) ->
     if strings.length > 0
       @bot.Room(user.room).speak strings.shift(), (err, data) =>
@@ -53,7 +55,8 @@ class Campfire extends Robot.Adapter
 
     @bot = bot
 
-module.exports = Campfire
+exports.use = (robot) ->
+  new Campfire robot
 
 class CampfireStreaming extends EventEmitter
   constructor: (options) ->
@@ -208,3 +211,4 @@ class CampfireStreaming extends EventEmitter
     request.on "error", (err) ->
       console.log err
       console.log err.stack
+

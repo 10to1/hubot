@@ -51,8 +51,8 @@ module.exports = (robot) ->
     broodjes = sandwicher.no_broodje_for_today(msg.message.user.name)
     msg.send "Hoe? Geen broodje? Maaagd!"
 
-  # test: http://www.rubular.com/r/GmEZcxwCLl
-  robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)\s+(.*)?(\s+maa?r?)?(\s+een\s+|\s+ne\s+)(.*)/i, (msg) ->
+  # test: http://www.rubular.com/r/zEBh5JhbGJ
+  robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(\s+.*?)?(\s+maa?r?)?(\s+een\s+|\s+ne\s+)(.*)/i, (msg) ->
     if msg.match[1] == "clear"
       msg.send "Ge moet wel een broodje doorgeven hé maaagd!"
     else

@@ -52,13 +52,14 @@ module.exports = (robot) ->
     msg.send "Hoe? Geen broodje? Maaagd!"
 
   # test: http://www.rubular.com/r/zEBh5JhbGJ
-  robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(\s+.*?)?(\s+maa?r?)?(\s+een\s+|\s+ne\s+)(.*)/i, (msg) ->
+  robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)\s+(.*?)?(\s+maa?r?)?(\s+een\s+|\s+ne\s+)(.*)/i, (msg) ->
     if msg.match[1] == "clear"
       msg.send "Ge moet wel een broodje doorgeven hé maaagd!"
     else
       broodje = msg.match[5]
       sandwicher = new Sandwicher robot, msg
-      if msg.match[2].toLowerCase() == "mij"
+      msg.send "mij = #{msg.match[2]}"
+      if msg.match[2].toLowerCase() == "mij" || msg.match[2] == ""
         name = msg.message.user.name 
       else
         name = msg.match[2]

@@ -1,15 +1,15 @@
 module.exports = (robot) ->
-  robot.hear /(piet|junkiesxl)/, (msg) ->
+  robot.hear /\b(piet|junkiesxl)\b/, (msg) ->
     if msg.message.user.name != "HUBOT"
-      msg.reply sloganize("Piet", "wining")
+      msg.send sloganize("Piet", "wining")
 
-  robot.hear /(jelle|verbeeckx|fousa|jaakske)/, (msg) ->
+  robot.hear /\b(jelle|verbeeckx|fousa|jaakske)\b/, (msg) ->
     if msg.message.user.name != "HUBOT"
-      msg.reply sloganize("Jelle", "being awesome")
+      msg.send sloganize("Jelle", "being awesome")
 
-  robot.hear /(bob|bab|bib)/, (msg) ->
+  robot.hear /\b(bob|bab|bib)\b/, (msg) ->
     if msg.message.user.name != "HUBOT"
-      msg.reply sloganize("Bob", "growing hair")
+      msg.send sloganize("Bob", "growing hair")
 
 sloganize = (name, slogan) ->
     "#{name}'s the name, #{slogan}'s the game!"

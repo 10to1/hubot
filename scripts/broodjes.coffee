@@ -151,9 +151,9 @@ class Sandwicher
             "name": userid
 
     if formatted_broodjes.length > 0
-      text = "Bestelling voor 10to1\n\n---\n\nLeveradres: Prins Boudewijnlaan 5, 2550 Kontich\n"
+      text = "Bestelling voor 10to1\n\n---\n\nLeveradres: Prins Boudewijnlaan 5, 2550 Kontich\n\n"
       for broodje in formatted_broodjes
-        text += "\n------------------------------------------------------------------------------------------\n"
+        text += "------------------------------------------------------------------------------------------\n"
         name = broodje["name"]
         sep = "-"
         for line in @_lines(broodje["broodje"], 60)

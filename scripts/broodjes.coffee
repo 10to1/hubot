@@ -155,10 +155,13 @@ class Sandwicher
       for broodje in formatted_broodjes
         text += "\n------------------------------------------------------------------------------------------\n"
         name = broodje["name"]
+        sep = "-"
         for line in @_lines(broodje["broodje"], 60)
-          text += sprintf("%-25.25s - %-60.60s", name, line)
-          name = "" 
-      text += "\n-------------------------------------------------------------------------------------------\n"
+          if line.length > 0
+            text += sprintf("%-25.25s %s %-60.60s\n", name, sep, line)
+            sep = " "
+            name = "" 
+      text += "-------------------------------------------------------------------------------------------\n"
       return text
 
     return null
@@ -168,9 +171,10 @@ class Sandwicher
     if text?
       p = 0
       loop
-        result.push text.substr(p, 60)
+        x = text.substr(p, 60).replace /^\s+|\s+$/g, ""
+        result.push x unless x.length == 0
         p += 60
-        break unless (p < text.length)
+        break unless p < text.length
     return result
 
   _send_mail: (text) ->

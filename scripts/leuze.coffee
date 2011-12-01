@@ -1,13 +1,13 @@
 module.exports = (robot) ->
-  robot.hear /\b(piet|junkiesxl)\b/, (msg) ->
+  robot.hear /\b(piet|junkiesxl)!\b/, (msg) ->
     if msg.message.user.name != "HUBOT"
-      msg.send sloganize("Piet", "wining")
+      msg.send sloganize("Piet", "winning")
 
-  robot.hear /\b(jelle|verbeeckx|fousa|jaakske)\b/, (msg) ->
+  robot.hear /\b(jelle|verbeeckx|fousa|jaakske)!\b/, (msg) ->
     if msg.message.user.name != "HUBOT"
       msg.send sloganize("Jelle", "being awesome")
 
-  robot.hear /\b(bob|bab|bib)\b/, (msg) ->
+  robot.hear /\b(bob|bab|bib)!\b/, (msg) ->
     if msg.message.user.name != "HUBOT"
       msg.send sloganize("Bob", "growing hair")
 

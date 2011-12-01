@@ -1,9 +1,12 @@
 Fs           = require 'fs'
-Url          = require 'url'
+Log          = require 'log'
 Path         = require 'path'
+Url          = require 'url'
 
 Brain        = require './brain'
 User         = require './user'
+
+HUBOT_DEFAULT_ADAPTERS = [ "campfire", "shell" ]
 
 class Robot
   # Robots receive messages from a chat source (Campfire, irc, etc), and
@@ -20,6 +23,8 @@ class Robot
     @listeners   = []
     @loadPaths   = []
     @enableSlash = false
+
+    @logger      = new Log process.env.HUBOT_LOG_LEVEL or "info"
 
     @loadAdapter adapterPath, adapter if adapter?
 
@@ -47,17 +52,18 @@ class Robot
     modifiers = re.pop() # pop off modifiers
 
     if re[0] and re[0][0] is "^"
-      console.log "\nWARNING: Anchors don't work well with respond, perhaps you want to use 'hear'"
-      console.log "WARNING: The regex in question was #{regex.toString()}\n"
+      @logger.warning "Anchors don't work well with respond, perhaps you want to use 'hear'"
+      @logger.warning "The regex in question was #{regex.toString()}"
 
     pattern = re.join("/") # combine the pattern back again
+
     if @alias
       alias = @alias.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&") # escape alias for regexp
       newRegex = new RegExp("^(?:#{alias}[:,]?|#{@name}[:,]?)\\s*(?:#{pattern})", modifiers)
     else
       newRegex = new RegExp("^#{@name}[:,]?\\s*(?:#{pattern})", modifiers)
 
-    console.log newRegex.toString()
+    @logger.debug newRegex.toString()
     @listeners.push new TextListener(@, newRegex, callback)
 
   # Public: Adds a Listener that triggers when anyone enters the room.
@@ -86,7 +92,7 @@ class Robot
       try
         lst.call message
       catch ex
-        console.log "error while calling listener: #{ex}"
+        @logger.error "Unable to call the listener: #{ex}"
 
   # Public: Loads every script in the given path.
   #
@@ -94,6 +100,8 @@ class Robot
   #
   # Returns nothing.
   load: (path) ->
+    @logger.info "Loading scripts from #{path}"
+
     Path.exists path, (exists) =>
       if exists
         @loadPaths.push path
@@ -110,8 +118,16 @@ class Robot
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
     if ext is '.coffee' or ext is '.js'
-      require(full) @
-      @parseHelp "#{path}/#{file}"
+      try
+        require(full) @
+        @parseHelp "#{path}/#{file}"
+      catch err
+        @logger.error "#{err}"
+
+  loadHubotScripts: (path, scripts) ->
+    @logger.info "Loading hubot-scripts from #{path}"
+    for script in scripts
+      @loadFile path, script
 
   # Load the adapter Hubot is going to use.
   #
@@ -120,20 +136,22 @@ class Robot
   #
   # Returns nothing.
   loadAdapter: (path, adapter) ->
+    @logger.info "Loading adapter #{adapter}"
+
     try
-      path = if adapter in [ "campfire", "shell" ]
+      path = if adapter in HUBOT_DEFAULT_ADAPTERS
         "#{path}/#{adapter}"
       else
         "hubot-#{adapter}"
 
       @adapter = require("#{path}").use(@)
     catch err
-      console.log "Can't load adapter '#{adapter}', try installing the package"
+      @logger.error "Cannot load adapter #{adapter} - #{err}"
 
   # Public: Help Commands for Running Scripts
   #
   # Returns an array of help commands for running scripts
-  helpCommands: () ->
+  helpCommands: ->
     @commands.sort()
 
   # Private: load help info from a loaded script
@@ -143,11 +161,27 @@ class Robot
   # Returns nothing
   parseHelp: (path) ->
     Fs.readFile path, "utf-8", (err, body) =>
-      throw err if err
+      throw err if err?
       for i, line of body.split("\n")
         break    if !(line[0] == '#' or line.substr(0, 2) == '//')
         continue if !line.match('-')
         @commands.push line[2..line.length]
+
+  # Public: A helper send function which delegates to the adapter's send
+  # function.
+  #
+  # user    - A User instance.
+  # strings - One or more Strings for each message to send.
+  send: (user, strings...) ->
+    @adapter.send user, strings...
+
+  # Public: A helper reply function which delegates to the adapter's reply
+  # function.
+  #
+  # user    - A User instance.
+  # strings - One or more Strings for each message to send.
+  reply: (user, strings...) ->
+    @adapter.reply user, strings...
 
   # Public: Get an Array of User objects stored in the brain.
   users: ->
@@ -177,8 +211,8 @@ class Robot
   usersForRawFuzzyName: (fuzzyName) ->
     lowerFuzzyName = fuzzyName.toLowerCase()
     user for key, user of (@brain.data.users or {}) when (
-         user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
-      
+      user.name.toLowerCase().lastIndexOf(lowerFuzzyName, 0) == 0)
+
   # Public: If fuzzyName is an exact match for a user, returns an array with
   # just that user. Otherwise, returns an array of all users for which
   # fuzzyName is a raw fuzzy match (see usersForRawFuzzyName).
@@ -190,11 +224,15 @@ class Robot
     # will include exact matches
     for user in matchedUsers
       return [user] if user.name.toLowerCase() is lowerFuzzyName
-          
+
     matchedUsers
 
   run: ->
     @adapter.run()
+
+  shutdown: ->
+    @adapter.close()
+    @brain.close()
 
 class Robot.Message
   # Represents an incoming message from the chat.

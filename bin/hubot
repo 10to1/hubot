@@ -87,7 +87,6 @@ else
 
   scriptsPath = Path.resolve ".", "scripts"
   robot.load scriptsPath
-  robot.load scriptsPath
 
   scriptsPath = Path.resolve "src", "scripts"
   robot.load scriptsPath

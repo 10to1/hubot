@@ -38,7 +38,6 @@ module.exports = (robot) ->
     handler = new Sandwicher robot, msg
     handler.order_all_broodjes msg.match[1]?
 
-
 #############################################
 
 
@@ -121,7 +120,7 @@ class Sandwicher
 
   order_broodje_for_today: (name, broodje) ->
     brain = new SandwichBrain @robot, @msg
-    name = @_fix_name name 
+    name = @_fix_name name
     brain.order_broodje_for_today(name, broodje)
     if name == @msg.message.user.name
       @msg.send "#{@msg.message.user.name} gaat straks een #{broodje} eten"
@@ -154,7 +153,7 @@ class Sandwicher
 
   _fix_name: (name) ->
     if !name? ||  name == "" || /^(?:mij|)$/i.test(name)
-      name = @msg.message.user.name 
+      name = @msg.message.user.name
     return name
 
   _generate_mail: ->
@@ -178,7 +177,7 @@ class Sandwicher
           if line.length > 0
             text += sprintf("%-25.25s %s %-60.60s\n", name, sep, line)
             sep = " "
-            name = "" 
+            name = ""
       text += "-------------------------------------------------------------------------------------------\n"
       return text
 
@@ -217,6 +216,6 @@ class Sandwicher
                 msg.send "De broodjes zijn besteld! BOOYAH!"
               else
                 msg.send err
-  
-  
+
+
 

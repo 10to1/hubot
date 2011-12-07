@@ -9,6 +9,10 @@
 #
 module.exports = (robot) ->
 
+  robot.respond /iedereen besteld/i, (msg) ->
+    handler = new Sandwicher robot, msg
+    handler.show_not_ordered()
+
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
     handler = new Sandwicher robot, msg
     handler.show_list_of_broodjes()
@@ -77,6 +81,20 @@ class Sandwicher
 
   show_list_of_broodjes: ->
     @msg.send "Geen idee! Hier is de link: http://www.alaminute.be/prijslijst.html"
+
+  show_not_ordered: ->
+    brain = new SandwichBrain @robot, @msg
+    sandwichlessUsers = []
+    orderedUsers = for name, broodje of brain.broodjes_for_today()
+      name
+    for own key, user of @robot.brain.data.users
+      name = "#{user['name']}"
+      unless (orderedUsers.some (word) -> word is name)
+        sandwichlessUsers.push name unless name is "HUBOT"
+    if sandwichlessUsers
+      @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
+    else
+      @msg.send "Iedereen heeft besteld."
 
   remove_all_broodjes_for_today: ->
     brain = new SandwichBrain @robot, @msg

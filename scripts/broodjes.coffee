@@ -40,7 +40,6 @@ module.exports = (robot) ->
 
 #############################################
 
-
 sprintf = require('sprintf').sprintf
 env     = process.env
 

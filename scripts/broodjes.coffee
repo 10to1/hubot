@@ -55,21 +55,19 @@ class SandwichBrain
     @msg = msg
 
   all_broodjes_for_user: (user) ->
-    @msg.send "DEBUG: standard #{@robot.brain.data.broodjes}"
     return [] unless @robot.brain.data.broodjes
     
     result = []
-    @msg.send "DEBUG: going in"
-    for day in @robot.brain.data.broodjes     
-      @msg.send "DEBUG: checking (#{day}): user = #{user}"
-      if user 
-        if @robot.brain.data.broodjes[day][user] 
-          @msg.send "Considering (#{user}): #{@robot.brain.data.broodjes[day][user]}"
-          result.push @robot.brain.data.broodjes[day][user]       
+    for day, order of @robot.brain.data.broodjes     
+#      @msg.send "DEBUG: checking (#{day}): user = #{user}"
+      if user? 
+        if order[user] 
+#          @msg.send "Considering (#{user}): #{order[user]}"
+          result.push order[user]       
       else
-        for u in @robot.brain.data.broodjes[day]
-          @msg.send "Considering (all): #{@robot.brain.data.broodjes[day][user]}"
-          result.push @robot.brain.data.broodjes[day][u]
+        for u, broodje of order
+#          @msg.send "Considering (all): #{u} -> #{broodje}"
+          result.push broodje if broodje?
     return result       
 
 
@@ -124,7 +122,7 @@ class Sandwicher
     if type == "lekkers" || type == "lekkers" 
       broodjes = brain.all_broodjes_for_user(@msg.message.user.name)
     else if type == "zot" || type == "verrassend"
-      broodjes = brain.all_broodjes_for_user()
+      broodjes = brain.all_broodjes_for_user(null)
     else
       broodjes = []
 

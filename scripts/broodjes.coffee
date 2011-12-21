@@ -27,9 +27,14 @@ module.exports = (robot) ->
     handler.remove_broodje_for_today msg.match[1] ? msg.match[2]
 
   # test: http://www.rubular.com/r/yAApRvQH5D
-  robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(?:(?:\s+voor)?\s+((?!(?:ne|een)).*?))?(\s+maa?r?)?(\s+een\s+|\s+ne\s+)(.*)/i, (msg) ->
+  robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(?:(?:\s+voor)?\s+((?!(?:ne|een|iets)).*?))?(\s+maa?r?)?\s+(een|ne|iets)\s+(.*)/i, (msg) ->
     handler = new Sandwicher robot, msg
-    handler.order_broodje_for_today msg.match[2], msg.match[5]
+    msg.send "Iets = #{msg.match[4]}"
+    if (msg.match[4] == "iets")
+      broodje = handler.find_special_broodje msg.match[5]
+    else
+      broodje = msg.match[5]
+    handler.order_broodje_for_today msg.match[2], broodje
 
   robot.respond /broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg
@@ -48,6 +53,22 @@ class SandwichBrain
   constructor: (robot, msg) ->
     @robot = robot
     @msg = msg
+
+  all_broodjes_for_user: (user) ->
+    return [] unless @robot.brain.data.broodjes
+    
+    result = []
+    for day in @robot.brain.data.broodjes     
+      if user 
+        if @robot.brain.data.broodjes[day][user] 
+          @msg.send "Considering (#{user}): #{@robot.brain.data.broodjes[day][user]}"
+          result.push @robot.brain.data.broodjes[day][user]       
+      else
+        for u in @robot.brain.data.broodjes[day]
+          @msg.send "Considering (all): #{@robot.brain.data.broodjes[day][user]}"
+          result.push @robot.brain.data.broodjes[day][u]
+    return result       
+
 
   order_broodje_for_today: (user, broodje) ->
     @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
@@ -95,6 +116,18 @@ class Sandwicher
     else
       @msg.send "Iedereen heeft besteld."
 
+  find_special_broodje: (type) ->
+    brain = new SandwichBrain @robot, @msg
+    if type == "lekkers" || type == "lekkers" 
+      broodjes = brain.all_broodjes_for_user(@msg.message.user.name)
+    else if type == "zot" || type == "verrassend"
+      broodjes = brain.all_broodjes_for_user()
+    else
+      broodjes = []
+
+    broodjes = [ "grote smos mexicano met samourai", "slaatje spek en appeltjes", "fitness smos hesp/kaas", "curryrol", "broodje choco" ] if broodjes.length == 0 #default choices
+    return broodjes[Math.floor(Math.random()*broodjes.length)]
+    
   remove_all_broodjes_for_today: ->
     brain = new SandwichBrain @robot, @msg
     broodjes = brain.broodjes_for_today()

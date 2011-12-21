@@ -29,7 +29,6 @@ module.exports = (robot) ->
   # test: http://www.rubular.com/r/yAApRvQH5D
   robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(?:(?:\s+voor)?\s+((?!(?:ne|een|iets)).*?))?(\s+maa?r?)?\s+(een|ne|iets)\s+(.*)/i, (msg) ->
     handler = new Sandwicher robot, msg
-    msg.send "Iets = #{msg.match[4]}"
     if (msg.match[4] == "iets")
       broodje = handler.find_special_broodje msg.match[5]
     else
@@ -59,14 +58,11 @@ class SandwichBrain
     
     result = []
     for day, order of @robot.brain.data.broodjes     
-#      @msg.send "DEBUG: checking (#{day}): user = #{user}"
       if user? 
         if order[user] 
-#          @msg.send "Considering (#{user}): #{order[user]}"
           result.push order[user]       
       else
         for u, broodje of order
-#          @msg.send "Considering (all): #{u} -> #{broodje}"
           result.push broodje if broodje?
     return result       
 

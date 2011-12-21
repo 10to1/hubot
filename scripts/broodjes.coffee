@@ -55,10 +55,13 @@ class SandwichBrain
     @msg = msg
 
   all_broodjes_for_user: (user) ->
+    @msg.send "DEBUG: standard #{@robot.brain.data.broodjes}"
     return [] unless @robot.brain.data.broodjes
     
     result = []
+    @msg.send "DEBUG: going in"
     for day in @robot.brain.data.broodjes     
+      @msg.send "DEBUG: checking (#{day}): user = #{user}"
       if user 
         if @robot.brain.data.broodjes[day][user] 
           @msg.send "Considering (#{user}): #{@robot.brain.data.broodjes[day][user]}"

@@ -1,3 +1,37 @@
+v2.1.2
+======
+* Update behaviour of finishing further execution of listeners
+* Scripts are now loaded in the following order
+  * Scripts defined in `./hubot-scripts.json` are loaded in order
+  * Scripts are loaded alphabetically from `/scripts`
+
+v2.1.1
+======
+* The hwhoops release, finish/done behavior is handled elsewhere
+
+v2.1.0
+======
+* Introduce Response.finish() to indicate that a message should not be
+  passed on to any other listeners
+* Scripts are evaluated in the following order
+  * `./scripts` is loaded alphabetically
+  * The contents of `./hubot-scripts.json` is loaded in order
+
+    module.exports = (robot) ->
+      robot.respond /\s*yo\s*\\?/i, (msg) ->
+        msg.reply "Yo!"
+        msg.finish()
+
+
+v2.0.7
+======
+* Update topic and logger scoping fixups - Horace Ko
+* Don't exit the process if listening to a room is denied
+
+v2.0.6
+======
+* Don't kill all username looks if some users don't have name attribute
+
 v2.0.5
 ======
 * All adapters have been removed except for shell and campfire

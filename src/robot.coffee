@@ -84,15 +84,18 @@ class Robot
 
   # Public: Passes the given message to any interested Listeners.
   #
-  # message - A Robot.Message instance.
+  # message - A Robot.Message instance. Listeners can flag this message as
+  #  'done' to prevent further execution
   #
   # Returns nothing.
   receive: (message) ->
-    for lst in @listeners
+    for listener in @listeners
       try
-        lst.call message
+        listener.call message
+        break if message.done
       catch ex
         @logger.error "Unable to call the listener: #{ex}"
+
 
   # Public: Loads every script in the given path.
   #
@@ -175,6 +178,15 @@ class Robot
   send: (user, strings...) ->
     @adapter.send user, strings...
 
+  # Public: A helper send function to message a room that the robot is in
+  #
+  # room    - String designating the room to message
+  # strings - One or more Strings for each message to send.
+  messageRoom: (room, strings...) ->
+    user = @userForId @id, { room: room }
+    @adapter.send user, strings...
+
+
   # Public: A helper reply function which delegates to the adapter's reply
   # function.
   #
@@ -200,7 +212,8 @@ class Robot
     result = null
     lowerName = name.toLowerCase()
     for k of (@brain.data.users or { })
-      if @brain.data.users[k]['name'].toLowerCase() is lowerName
+      userName = @brain.data.users[k]['name']
+      if userName? and userName.toLowerCase() is lowerName
         result = @brain.data.users[k]
     result
 
@@ -238,7 +251,11 @@ class Robot.Message
   # Represents an incoming message from the chat.
   #
   # user - A User instance that sent the message.
-  constructor: (@user) ->
+  constructor: (@user, @done = false) ->
+
+  # Indicates that no other Listener should be called on this object
+  finish: () ->
+    @done = true
 
 class Robot.TextMessage extends Robot.Message
   # Represents an incoming message from the chat.
@@ -285,7 +302,7 @@ class Listener
   # Returns nothing.
   call: (message) ->
     if match = @matcher message
-      @callback new @robot.Response(@robot, message, match)
+      @callback new @robot.Response(@robot, message, match) 
 
 class TextListener extends Listener
   # TextListeners receive every message from the chat source and decide if they want
@@ -341,9 +358,15 @@ class Robot.Response
   #
   # items - An Array of items (usually Strings).
   #
-  # Returns a random item.
+  # Returns an random item.
   random: (items) ->
     items[ Math.floor(Math.random() * items.length) ]
+
+  # Public: Tell the message to stop dispatching to listeners
+  #
+  # Returns nothing.
+  finish: () ->
+    @message.finish()
 
   # Public: Creates a scoped http client with chainable methods for
   # modifying the request.  This doesn't actually make a request though.

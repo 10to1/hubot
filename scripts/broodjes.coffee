@@ -6,7 +6,8 @@
 # geen broodjes - Remove todays orders
 # bestel een <broodje> - Order a broodje for today
 # bestel alle broodjes - Send an order email to a la minute
-#
+# iedereen besteld - Check if everybody has ordered
+# vergeet (iemand) - No longer show person in "iedereen besteld" list
 #
 module.exports = (robot) ->
 
@@ -14,11 +15,15 @@ module.exports = (robot) ->
     handler = new Sandwicher robot, msg
     handler.show_not_ordered()
 
+  robot.respond /(vergeet|ignore|nooit iets voor)\s+(.+)/i, (msg) ->
+    handler = new Sandwicher robot, msg
+    handler.forget msg.match[2]
+
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
     handler = new Sandwicher robot, msg
     handler.show_list_of_broodjes()
 
-  robot.respond /(vandaag\s+)?geen broodjes/i, (msg) ->
+  robot.respond /(vandaag\s+)?geen\s+broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg
     handler.remove_all_broodjes_for_today()
 
@@ -66,8 +71,27 @@ class SandwichBrain
           result.push broodje if broodje?
     return result       
 
+  forget: (user) ->
+    @msg.send "user = #{user} today = #{@today()}"
+    if user
+      @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
+      @robot.brain.data.forgotten[user] = @today()
+    @msg.send @robot.brain.data.forgotten
+
+  unforget: (user) ->
+    @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
+    delete @robot.brain.data.forgotten[user]
+
+  forgotten_users: ->
+    return [] unless @robot.brain.data.forgotten
+    Object.keys(@robot.brain.data.forgotten)
+
+  is_forgotten: (user) ->
+    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
+    @robot.brain.data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->
+    @unforget user
     @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
     @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
     @robot.brain.data.broodjes[@today()][user] = broodje
@@ -96,6 +120,11 @@ class Sandwicher
     @robot = robot
     @msg = msg
 
+  forget: (person) ->
+    brain = new SandwichBrain @robot, @msg
+    brain.forget person 
+    @msg.send "Goed, we doen alsof #{person} er niet is."
+
   show_list_of_broodjes: ->
     @msg.send "Geen idee! Hier is de link: http://www.alaminute.be/prijslijst.html"
 
@@ -107,8 +136,8 @@ class Sandwicher
     for own key, user of @robot.brain.data.users
       name = "#{user['name']}"
       unless (orderedUsers.some (word) -> word is name)
-        sandwichlessUsers.push name unless name is "HUBOT"
-    if sandwichlessUsers
+        sandwichlessUsers.push name unless (name is "HUBOT" || brain.is_forgotten(name)) 
+    if sandwichlessUsers && sandwichlessUsers.length
       @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
     else
       @msg.send "Iedereen heeft besteld."

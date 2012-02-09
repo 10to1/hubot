@@ -72,11 +72,9 @@ class SandwichBrain
     return result       
 
   forget: (user) ->
-    @msg.send "user = #{user} today = #{@today()}"
     if user
       @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
       @robot.brain.data.forgotten[user] = @today()
-    @msg.send @robot.brain.data.forgotten
 
   unforget: (user) ->
     @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten

@@ -7,7 +7,7 @@
 # bestel een <broodje> - Order a broodje for today
 # bestel alle broodjes - Send an order email to a la minute
 # iedereen besteld - Check if everybody has ordered
-# vergeet (iemand) - No longer show person in "iedereen besteld" list
+# geen broodje meer voor (iemand) - No longer show person in "iedereen besteld" list
 #
 module.exports = (robot) ->
 
@@ -15,7 +15,7 @@ module.exports = (robot) ->
     handler = new Sandwicher robot, msg
     handler.show_not_ordered()
 
-  robot.respond /(vergeet|ignore|nooit iets voor)\s+(.+)/i, (msg) ->
+  robot.respond /(geen broodje meer voor|nooit meer iets voor)\s+(.+)/i, (msg) ->
     handler = new Sandwicher robot, msg
     handler.forget msg.match[2]
 

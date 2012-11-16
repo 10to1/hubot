@@ -28,18 +28,6 @@
         "wolfram": ">= 0.2.0"
     },
 
-    "dependencies": {
-        "coffee-script": "1.2.0",
-        "redis": ">= 0.7.1",
-        "sprintf": ">= 0.1.1",
-        "nodemailer": ">= 0.3.18",
-        "optparse": "1.0.3",
-        "scoped-http-client": "0.9.6",
-        "log": "1.2.0",
-        "hubot-scripts": ">= 2.0.3",
-        "wolfram": ">= 0.2.0"
-    },
-
     "main": "./index",
 
     "bin": {

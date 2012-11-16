@@ -1,34 +1,43 @@
 {
-  "name":        "hubot",
-  "version":     "2.1.2",
-  "author":      "hubot",
-  "keywords":    "github hubot campfire bot",
-  "description": "A simple helpful Robot for your Company",
-  "licenses":     [{
-    "type":       "MIT",
-    "url":        "http://github.com/github/hubot/raw/master/LICENSE"
-  }],
+    "name":        "hubot",
+    "version":     "2.1.2",
+    "author":      "hubot",
+    "keywords":    "github hubot campfire bot",
+    "description": "A simple helpful Robot for your Company",
+    "licenses":     [{
+        "type":       "MIT",
+        "url":        "http://github.com/github/hubot/raw/master/LICENSE"
+    }],
 
-  "repository" : {
-    "type" : "git",
-    "url" : "http://github.com/github/hubot.git"
-  },
+    "repository" : {
+        "type" : "git",
+        "url" : "http://github.com/github/hubot.git"
+    },
 
-  "dependencies": {
-    "coffee-script": "1.2.0",
-      "redis": ">= 0.7.1",
-      "sprintf": ">= 0.1.1",
-      "nodemailer": ">= 0.3.18",
-      "optparse": "1.0.3",
-      "scoped-http-client": "0.9.6",
-      "log": "1.2.0",
-      "hubot-scripts": ">= 2.0.3",
-      "wolfram": ">= 0.2.0"
-  },
+    "engines": {
+        "name": "hubot",
+        "version": "0.0.1",
+        "engines": {
+            "node": "0.8.x",
+            "npm":  "1.1.x"
+        }
+    },
 
-  "main": "./index",
+    "dependencies": {
+        "coffee-script": "1.2.0",
+        "redis": ">= 0.7.1",
+        "sprintf": ">= 0.1.1",
+        "nodemailer": ">= 0.3.18",
+        "optparse": "1.0.3",
+        "scoped-http-client": "0.9.6",
+        "log": "1.2.0",
+        "hubot-scripts": ">= 2.0.3",
+        "wolfram": ">= 0.2.0"
+    },
 
-  "bin": {
-    "hubot": "./bin/hubot"
-  }
+    "main": "./index",
+
+    "bin": {
+        "hubot": "./bin/hubot"
+    }
 }

@@ -1,3 +1,83 @@
+v2.3.4
+======
+
+* Add 'examples' and 'urls' to list of known documentation sections
+
+* Improve mustache results - marsam in #341
+
+v2.3.3
+======
+
+* Fix help parsing of javascript iles - ferlores in #322 
+
+* Roles will correctly semicolon-delimit the list of roles if one (or more) roles contain a comma. - futuraprime in #327
+
+* Updated translations of supported languages as of 20120801 - sopel in #328
+
+* Escape brackets in html view of help - tombell, technicalpickles
+
+* More coffee-like translate.coffee - elmoeleven in #336
+
+* Fixed reference to when npm was included w/ node - technicalpickles in #347
+
+* Backwards-compatible help parsing, and tracking all documentation instead of just commands - technicalpickles
+
+v2.3.2
+======
+* New route `/hubot/help` to display command help - tombell
+
+* Role script fix - ferlores
+
+* Store connect server - tombell
+
+v2.3.0
+======
+* Extracted remaining classes into their own files - tombell
+
+**Note** this is a breaking change for adapters. Adapters are going to want to
+use the following code snippet for requiring classes from hubot.
+
+    {Adapter,Robot} = require 'hubot'
+
+* Update the formatting of documentation comments at the top of
+  scripts - technicalpickles
+
+* Update the parsing of the documentation comments - tombell
+
+v2.2.0
+======
+* Fixed keep alive ping, requires `HEROKU_URL` - tombell and jimeh
+
+* Updated dependency versions - tombell and jimeh
+
+v2.1.4
+======
+* Hubot now keeps himself alive due to Heroku's web processes shutting down
+  when idle - tombell
+
+* Hubot's image search is now defaulted to safe search - kylev
+
+* Hubot now emits a 'connected' event when he connects to the chosen
+  adapter - sbryant
+
+* Fix the roles.coffee not to respond to empty names - christierney
+
+v2.1.3 - The Heat Stroke Release
+================================
+* Hubot now has a web interface and supports connect middleware, examples in
+  httpd.coffee - atmos / tombell
+
+    module.exports = (robot) ->
+      robot.router.get "/hubot/version", (req, res) ->
+        res.end robot.version
+
+* Add a catchAll callback that handles responses that match nothing
+  else - titanous / ejfinnerman
+
+    module.exports = (robot) ->
+      robot.catchAll (msg) ->
+        router.get "/hubot/version", (req, res) ->
+
 v2.1.2
 ======
 * Update behaviour of finishing further execution of listeners
@@ -21,7 +101,6 @@ v2.1.0
       robot.respond /\s*yo\s*\\?/i, (msg) ->
         msg.reply "Yo!"
         msg.finish()
-
 
 v2.0.7
 ======

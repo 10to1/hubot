@@ -10,7 +10,7 @@ hubot ready to deploy.
 
 ## Getting your own
 
-Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node v0.6.5+) installed.
+Make sure you have [node.js][nodejs] and [npm][npmjs] (npm comes with node v0.6.3+) installed.
 
 Download the [latest version of hubot][hubot-latest].
 
@@ -48,6 +48,23 @@ individual scripts.
 
 [hubot-scripts]: https://github.com/github/hubot-scripts
 [hubot-scripts-readme]: https://github.com/github/hubot-scripts#readme
+
+## HTTP Listener
+
+Hubot has a HTTP listener which listens on the port specified by the `PORT`
+environment variable.
+
+You can specify routes to listen on in your scripts by using the `router`
+property on `robot`.
+
+```coffeescript
+module.exports = (robot) ->
+  robot.router.get "/hubot/version", (req, res) ->
+    res.end robot.version
+```
+
+There are functions for GET, POST, PUT and DELETE, which all take a route and
+callback function that accepts a request and a response.
 
 ## Testing hubot locally
 

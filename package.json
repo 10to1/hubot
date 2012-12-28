@@ -31,16 +31,9 @@
         "connect": "2.3.4",
         "connect_router": "1.8.6",
 
-        // Used by wolfram
         "wolfram": ">= 0.2.0",
-
-        // Used by cleverbot
         "cleverbot-node": ">= 0.1.1",
-
-        // Used by TV Show
         "xml2js": ">= 0.2.2",
-
-        // Used By wikipedia.coffee
         "underscore": ">= 1.4.3",
         "underscore.string": ">= 2.3.1",
         "htmlparser": "1.7.6",

@@ -1,14 +1,25 @@
-# 10to1 broodjes maangement system
+# Description:
+#   10to1's Broodjes Management System
 #
-# broodjes - Show the list of broodjes
-# welke broodjes - Show the link to the price list
-# voor mij geen broodje - Remove your order from today
-# geen broodjes - Remove todays orders
-# bestel een <broodje> - Order a broodje for today
-# bestel alle broodjes - Send an order email to a la minute
-# iedereen besteld - Check if everybody has ordered
-# geen broodje meer voor (iemand) - No longer show person in "iedereen besteld" list
+# Dependencies:
+#   None
 #
+# Configuration:
+#   None
+#
+# Commands:
+#   hubot broodjes - Toont een lijst van bestelde broodjes
+#   hubot welke broodjes - Toon een lijst van alle mogelijke broodjes
+#   hubot voor mij geen broodje - Verwijdert je bestelling voor vandaag
+#   hubot geen broodjes - Verdwijdert alle broodjes voor vandaag
+#   hubot bestel een <broodje> - Bestel ene broodje voor vandaag
+#   hubot bestel alle broodjes - Stuurt een fax naar A La Minute
+#   hubot iedereen besteld - Check om te zien of iedereen besteld heeft
+#   hubot geen broodje meer voor (iemand) - No longer show person in "iedereen besteld" list
+#
+# Author:
+#   inferis
+
 module.exports = (robot) ->
 
   robot.respond /iedereen besteld/i, (msg) ->
@@ -20,8 +31,11 @@ module.exports = (robot) ->
     handler.forget msg.match[2]
 
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.show_list_of_broodjes()
+    msg.http("http://hummercatch.herokuapp.com/hubot/food").get() (err, res, body) ->
+      if res.statusCode is 200
+        msg.send data
+      else
+        msg.reply "Kan geen broodjes vinden :("
 
   robot.respond /(vandaag\s+)?geen\s+broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg
@@ -60,16 +74,16 @@ class SandwichBrain
 
   all_broodjes_for_user: (user) ->
     return [] unless @robot.brain.data.broodjes
-    
+
     result = []
-    for day, order of @robot.brain.data.broodjes     
-      if user? 
-        if order[user] 
-          result.push order[user]       
+    for day, order of @robot.brain.data.broodjes
+      if user?
+        if order[user]
+          result.push order[user]
       else
         for u, broodje of order
           result.push broodje if broodje?
-    return result       
+    return result
 
   forget: (user) ->
     if user
@@ -120,7 +134,7 @@ class Sandwicher
 
   forget: (person) ->
     brain = new SandwichBrain @robot, @msg
-    brain.forget person 
+    brain.forget person
     @msg.send "Goed, we doen alsof #{person} er niet is."
 
   show_list_of_broodjes: ->
@@ -134,7 +148,7 @@ class Sandwicher
     for own key, user of @robot.brain.data.users
       name = "#{user['name']}"
       unless (orderedUsers.some (word) -> word is name)
-        sandwichlessUsers.push name unless (name is "HUBOT" || brain.is_forgotten(name)) 
+        sandwichlessUsers.push name unless (name is "HUBOT" || brain.is_forgotten(name))
     if sandwichlessUsers && sandwichlessUsers.length
       @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
     else
@@ -142,7 +156,7 @@ class Sandwicher
 
   find_special_broodje: (type) ->
     brain = new SandwichBrain @robot, @msg
-    if type == "lekkers" || type == "lekkers" 
+    if type == "lekkers" || type == "lekkers"
       broodjes = brain.all_broodjes_for_user(@msg.message.user.name)
     else if type == "zot" || type == "verrassend"
       broodjes = brain.all_broodjes_for_user(null)
@@ -151,7 +165,7 @@ class Sandwicher
 
     broodjes = [ "grote smos mexicano met samourai", "slaatje spek en appeltjes", "fitness smos hesp/kaas", "curryrol", "broodje choco" ] if broodjes.length == 0 #default choices
     return broodjes[Math.floor(Math.random()*broodjes.length)]
-    
+
   remove_all_broodjes_for_today: ->
     brain = new SandwichBrain @robot, @msg
     broodjes = brain.broodjes_for_today()
@@ -273,6 +287,3 @@ class Sandwicher
                 msg.send "De broodjes zijn besteld! BOOYAH!"
               else
                 msg.send err
-
-
-

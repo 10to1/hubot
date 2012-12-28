@@ -33,7 +33,7 @@ module.exports = (robot) ->
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
     msg.http("http://hummercatch.herokuapp.com/hubot/food").get() (err, res, body) ->
       if res.statusCode is 200
-        msg.send data
+        msg.send body
       else
         msg.reply "Kan geen broodjes vinden :("
 

@@ -20,6 +20,13 @@
 # Author:
 #   inferis
 
+URL = "http://hummercatch.herokuapp.com/hubot"
+
+catchRequest = (message, path, action, options, callback) ->
+
+  message.http("#{URL}#{path}").query(options)[action]() (err, res, body) ->
+    callback(err,res,body)
+
 module.exports = (robot) ->
 
   robot.respond /iedereen besteld/i, (msg) ->
@@ -31,7 +38,7 @@ module.exports = (robot) ->
     handler.forget msg.match[2]
 
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
-    msg.http("http://hummercatch.herokuapp.com/hubot/food").get() (err, res, body) ->
+    catchRequest msg, "/food", "get", {}, (err, res, body) ->
       if res.statusCode is 200
         msg.send body
       else
@@ -53,6 +60,11 @@ module.exports = (robot) ->
     else
       broodje = msg.match[5]
     handler.order_broodje_for_today msg.match[2], broodje
+    catchRequest msg, "/order", "post", {order: broodje}, (err, res, body) ->
+      if res.statusCode is 200
+        msg.send "#{body}"
+      else
+        msg.reply "Kon niet parsen: #{err}"
 
   robot.respond /broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg

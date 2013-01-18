@@ -20,9 +20,13 @@
  "trollicon.coffee",
  "applause.coffee",
  "dealwithit.coffee",
- "demolition-man.coffee",
  "github-credentials.coffee",
  "replygif.coffee",
  "achievement_unlocked.coffee",
  "imgur-info.coffee",
- "youtube-info.coffee"]
+ "youtube-info.coffee",
+ "hubotagainsthumanity.coffee",
+ "rands-when-you-say.coffee"
+]
+
+// "demolition-man.coffee"

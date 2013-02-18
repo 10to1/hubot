@@ -1,1 +1,1 @@
-app: bin/hubot -a campfire -n Hubot
+app: bin/hubot -a $HUBOT_ADAPTER -n Hubot

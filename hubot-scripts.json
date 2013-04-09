@@ -32,4 +32,5 @@
  "wolfram.coffee",
  "xkcd.coffee",
  "xmas.js",
- "youtube-info.coffee"]
+ "youtube-info.coffee",
+ "darksky.coffee"]

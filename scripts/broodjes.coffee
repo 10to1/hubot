@@ -62,9 +62,9 @@ module.exports = (robot) ->
     handler.order_broodje_for_today msg.match[2], broodje
     catchRequest msg, "/order", "post", {order: broodje}, (err, res, body) ->
       if res.statusCode is 200
-        msg.send "#{body}"
+        # msg.send "#{body}"
       else
-        msg.reply "Kon niet parsen: #{err}"
+        # msg.reply "Kon niet parsen: #{err}"
 
   robot.respond /broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg

@@ -19,31 +19,31 @@
 
 module.exports = (robot) ->
 
-  robot.hear /cue (piet|junkiesxl)/, (msg) ->
+  robot.hear /cue @?(piet|junkiesxl)/, (msg) ->
     sendEpicGifForName("pjaspers", msg)
 
-  robot.hear /cue (inferis|geknipt|dotter|dottom|a3|maaagd)/, (msg) ->
+  robot.hear /cue @?(inferis|geknipt|dotter|dottom|a3|maaagd)/, (msg) ->
     sendEpicGifForName("inferis", msg)
 
-  robot.hear /cue (jelle|verbeeckx|fousa|jaakske)/, (msg) ->
+  robot.hear /cue @?(jelle|verbeeckx|fousa|jaakske)/, (msg) ->
     sendEpicGifForName("fousa", msg)
 
-  robot.hear /cue (bob|bab|bib|boob)/, (msg) ->
+  robot.hear /cue @?(bob|bab|bib|boob)/, (msg) ->
     sendEpicGifForName("reprazent", msg)
 
-  robot.hear /cue (pcbob)/, (msg) ->
+  robot.hear /cue @?(pcbob)/, (msg) ->
     sendEpicGifForName("pcbob", msg)
 
-  robot.hear /cue (soffe|sophie|poeziemauw)/, (msg) ->
+  robot.hear /cue @?(soffe|sophie|poeziemauw)/, (msg) ->
     sendEpicGifForName("poeziemauw", msg)
 
-  robot.hear /cue (atog|koen)/, (msg) ->
+  robot.hear /cue @?(atog|koen)/, (msg) ->
     sendEpicGifForName("atog", msg)
 
-  robot.hear /cue (evert)/, (msg) ->
+  robot.hear /cue @?(evert)/, (msg) ->
     sendEpicGifForName("evert", msg)
 
-  robot.hear /cue (tomk|honcho)/, (msg) ->
+  robot.hear /cue @?(tomk|honcho)/, (msg) ->
     sendEpicGifForName("tomk", msg)
 
 epicGifForName = (name) ->

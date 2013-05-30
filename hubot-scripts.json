@@ -34,4 +34,5 @@
  "xmas.js",
  "youtube-info.coffee",
  "darksky.coffee",
- "github-status.coffee"]
+ "github-status.coffee",
+ "remind.coffee"]

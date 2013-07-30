@@ -33,4 +33,8 @@
  "youtube-info.coffee",
  "darksky.coffee",
  "github-status.coffee",
- "remind.coffee"]
+ "remind.coffee",
+ "excuse.coffee",
+ "foass.coffee",
+ "sensitive.coffee",
+ "gorbypuff.coffee"]

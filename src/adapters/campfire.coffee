@@ -1,23 +1,44 @@
 HTTPS          = require 'https'
 {EventEmitter} = require 'events'
 
-Robot                                   = require '../robot'
-Adapter                                 = require '../adapter'
-{TextMessage,EnterMessage,LeaveMessage} = require '../message'
+Robot                                                = require '../robot'
+Adapter                                              = require '../adapter'
+{TextMessage,EnterMessage,LeaveMessage,TopicMessage} = require '../message'
 
 class Campfire extends Adapter
-  send: (user, strings...) ->
+  send: (envelope, strings...) ->
     if strings.length > 0
-      @bot.Room(user.room).speak strings.shift(), (err, data) =>
-        @robot.logger.error "Campfire error: #{err}" if err?
-        @send user, strings...
+      string = strings.shift()
+      if typeof(string) == 'function'
+        string()
+        @send envelope, strings...
+      else
+        @bot.Room(envelope.room).speak string, (err, data) =>
+          @robot.logger.error "Campfire error: #{err}" if err?
+          @send envelope, strings...
 
-  reply: (user, strings...) ->
-    @send user, strings.map((str) -> "#{user.name}: #{str}")...
+  reply: (envelope, strings...) ->
+    @send envelope, strings.map((str) -> "#{envelope.user.name}: #{str}")...
 
-  topic: (user, strings...) ->
-    @bot.Room(user.room).topic strings.join(" / "), (err, data) =>
+  topic: (envelope, strings...) ->
+    @bot.Room(envelope.room).topic strings.join(" / "), (err, data) =>
       @robot.logger.error "Campfire error: #{err}" if err?
+
+  play: (envelope, strings...) ->
+    @bot.Room(envelope.room).sound strings.shift(), (err, data) =>
+      @robot.logger.error "Campfire error: #{err}" if err?
+      @play envelope, strings...
+
+  locked: (envelope, strings...) ->
+    if envelope.message.private
+      @send envelope, strings...
+    else
+      @bot.Room(envelope.room).lock (args...) =>
+        strings.push =>
+          # campfire won't send messages from just before a room unlock. 3000
+          # is the 3-second poll.
+          setTimeout (=> @bot.Room(envelope.room).unlock()), 3000
+        @send envelope, strings...
 
   run: ->
     self = @
@@ -29,26 +50,48 @@ class Campfire extends Adapter
 
     bot = new CampfireStreaming(options, @robot)
 
-    withAuthor = (callback) -> (id, created, room, user, body) ->
-      bot.User user, (err, userData) ->
-        if userData.user
-          author = self.userForId(userData.user.id, userData.user)
-          self.robot.brain.data.users[userData.user.id].name = userData.user.name
-          self.robot.brain.data.users[userData.user.id].email_address = userData.user.email_address
-          author.room = room
-          callback id, created, room, user, body, author
+    withAuthor = (callback) ->
+      (id, created, room, user, body) ->
+        bot.User user, (err, userData) ->
+          if userData.user
+            author = self.robot.brain.userForId(userData.user.id, userData.user)
+            userId = userData.user.id
+            self.robot.brain.data
+              .users[userId].name = userData.user.name
+            self.robot.brain.data
+              .users[userId].email_address = userData.user.email_address
+            author.room = room
+            callback id, created, room, user, body, author
 
-    bot.on "TextMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new TextMessage(author, body)
+    bot.on "TextMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          message = new TextMessage author, body, id
+          message.private = bot.private[room]
+          self.receive message
 
-    bot.on "EnterMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new EnterMessage(author)
+    bot.on "EnterMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new EnterMessage author, null, id
 
-    bot.on "LeaveMessage", withAuthor (id, created, room, user, body, author) ->
-      unless bot.info.id == author.id
-        self.receive new LeaveMessage(author)
+    bot.on "LeaveMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new LeaveMessage author, null, id
+
+    bot.on "TopicChangeMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        unless bot.info.id is author.id
+          self.receive new TopicMessage author, body, id
+
+    bot.on "LockMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        bot.private[room] = true
+
+    bot.on "UnlockMessage",
+      withAuthor (id, created, room, user, body, author) ->
+        bot.private[room] = false
 
     bot.Me (err, data) ->
       bot.info = data.user
@@ -73,7 +116,8 @@ exports.use = (robot) ->
 class CampfireStreaming extends EventEmitter
   constructor: (options, @robot) ->
     unless options.token? and options.rooms? and options.account?
-      @robot.logger.error "Not enough parameters provided. I Need a token, rooms and account"
+      @robot.logger.error \
+        "Not enough parameters provided. I need a token, rooms and account"
       process.exit(1)
 
     @token         = options.token
@@ -81,6 +125,7 @@ class CampfireStreaming extends EventEmitter
     @account       = options.account
     @host          = @account + ".campfirenow.com"
     @authorization = "Basic " + new Buffer("#{@token}:x").toString("base64")
+    @private       = {}
 
   Rooms: (callback) ->
     @get "/rooms", callback
@@ -96,7 +141,7 @@ class CampfireStreaming extends EventEmitter
     logger = @robot.logger
 
     show: (callback) ->
-      self.post "/room/#{id}", "", callback
+      self.get "/room/#{id}", callback
 
     join: (callback) ->
       self.post "/room/#{id}/join", "", callback
@@ -153,7 +198,6 @@ class CampfireStreaming extends EventEmitter
             # campfire api sends a ' ' heartbeat every 3s
 
           else if chunk.match(/^\s*Access Denied/)
-            # errors are not json formatted
             logger.error "Campfire error on room #{id}: #{chunk}"
 
           else
@@ -168,15 +212,22 @@ class CampfireStreaming extends EventEmitter
               if part
                 try
                   data = JSON.parse part
-                  self.emit data.type, data.id, data.created_at, data.room_id, data.user_id, data.body
+                  self.emit(
+                    data.type,
+                    data.id,
+                    data.created_at,
+                    data.room_id,
+                    data.user_id,
+                    data.body
+                  )
                 catch error
                   logger.error "Campfire error: #{error}\n#{error.stack}"
 
         response.on "end", ->
           logger.error "Streaming connection closed for room #{id}. :("
-          setTimeout (->
+          setTimeout ->
             self.emit "reconnect", id
-          ), 5000
+          , 5000
 
         response.on "error", (err) ->
           logger.error "Campfire response error: #{err}"
@@ -186,7 +237,6 @@ class CampfireStreaming extends EventEmitter
 
       request.end()
 
-  # Convenience HTTP Methods for posting on behalf of the token"d user
   get: (path, callback) ->
     @request "GET", path, null, callback
 
@@ -229,14 +279,15 @@ class CampfireStreaming extends EventEmitter
         if response.statusCode >= 400
           switch response.statusCode
             when 401
-              throw new Error "Invalid access token provided, campfire refused the authentication"
+              throw new Error "Invalid access token provided"
             else
               logger.error "Campfire error: #{response.statusCode}"
 
-        try
-          callback null, JSON.parse(data)
-        catch error
-          callback null, data or { }
+        if callback
+          try
+            callback null, JSON.parse(data)
+          catch error
+            callback null, data or { }
 
       response.on "error", (err) ->
         logger.error "Campfire response error: #{err}"

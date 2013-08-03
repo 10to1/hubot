@@ -29,7 +29,7 @@
     "scoped-http-client": "0.9.8",
     "log":                "1.4.0",
     "express":            "3.3.4",
-    "hubot-scripts", "2.5.2",
+    "hubot-scripts": "2.5.2",
     "redis": "0.8.4",
     "sprintf": "0.1.1",
     "nodemailer": "0.5.2"

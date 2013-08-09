@@ -147,7 +147,7 @@ class SandwichBrain
     return was
 
   sandwichlessUsers: ->
-  result = []
+    result = []
     orderedUsers = for name, broodje of @robot.brain.broodjes_for_today()
       name
     for own key, user of @robot.brain.data.users

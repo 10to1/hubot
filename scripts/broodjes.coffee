@@ -33,10 +33,10 @@ module.exports = (robot) ->
 
   reminderJob = new cronJob '0 15 17 * * 1-5',
                 ->
-                    brain = new SandwichBrain robot, null
-                    sandwichlessUsers = brain.sandwichlessUsers
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers
                     if sandwichlessUsers && sandwichlessUsers.length
-                        robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
+                      robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                 null
                 true
                 'Europe/Brussels'
@@ -147,7 +147,7 @@ class SandwichBrain
     return was
 
   sandwichlessUsers: ->
-	result = []
+  result = []
     orderedUsers = for name, broodje of @robot.brain.broodjes_for_today()
       name
     for own key, user of @robot.brain.data.users

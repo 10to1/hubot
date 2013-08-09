@@ -22,12 +22,21 @@
 
 URL = "http://hummercatch.herokuapp.com/hubot"
 
+cronJob         = require('cron').CronJob
+
 catchRequest = (message, path, action, options, callback) ->
 
   message.http("#{URL}#{path}").query(options)[action]() (err, res, body) ->
     callback(err,res,body)
 
 module.exports = (robot) ->
+
+  reminderJob = new cronJob '15 16 * * 1-5',
+                ->
+                  robot.messageRoom "hubot@10to1.be", "@all binnen 10min verstuur ik de fax!"
+                null
+                true
+                'Europe/Brussels'
 
   robot.respond /iedereen besteld/i, (msg) ->
     handler = new Sandwicher robot, msg

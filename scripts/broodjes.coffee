@@ -31,9 +31,9 @@ catchRequest = (message, path, action, options, callback) ->
 
 module.exports = (robot) ->
 
-  reminderJob = new cronJob '0 25 16 * * 1-5',
+  reminderJob = new cronJob '0 45 16 * * 1-5',
                 ->
-                  robot.messageRoom "General", "@all binnen 10min verstuur ik de fax!"
+                  robot.messageRoom "271712", "@all binnen 10min verstuur ik de fax!"
                 null
                 true
                 'Europe/Brussels'

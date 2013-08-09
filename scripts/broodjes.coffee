@@ -31,7 +31,7 @@ catchRequest = (message, path, action, options, callback) ->
 
 module.exports = (robot) ->
 
-  reminderJob = new cronJob '0 38 17 * * 1-5',
+  reminderJob = new cronJob '0 36 17 * * 1-5',
                 ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers

@@ -144,6 +144,7 @@ class SandwichBrain
 
   no_broodje_for_today: (user) ->
     @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
+    @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
     was = @robot.brain.data.broodjes[@today()][user]
     @robot.brain.data.broodjes[@today()][user] = null
     return was

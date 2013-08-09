@@ -179,7 +179,7 @@ class Sandwicher
 
   show_not_ordered: ->
     brain = new SandwichBrain @robot, @msg
-    sandwichlessUsers = brain.sandwichlessUsers
+    sandwichlessUsers = brain.sandwichlessUsers()
     if sandwichlessUsers && sandwichlessUsers.length
       @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
     else

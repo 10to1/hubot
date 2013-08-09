@@ -31,9 +31,12 @@ catchRequest = (message, path, action, options, callback) ->
 
 module.exports = (robot) ->
 
-  reminderJob = new cronJob '0 45 16 * * 1-5',
+  reminderJob = new cronJob '0 5 17 * * 1-5',
                 ->
-                  robot.messageRoom "271712", "@all binnen 10min verstuur ik de fax!"
+				  brain = new SandwichBrain robot, null
+				  sandwichlessUsers = brain.sandwichlessUsers
+			      if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                 null
                 true
                 'Europe/Brussels'
@@ -143,6 +146,16 @@ class SandwichBrain
     @robot.brain.data.broodjes[@today()][user] = null
     return was
 
+  sandwichlessUsers: ->
+	result = []
+    orderedUsers = for name, broodje of @robot.brain.broodjes_for_today()
+      name
+    for own key, user of @robot.brain.data.users
+      name = "#{user['name']}"
+      unless (orderedUsers.some (word) -> word is name)
+        result.push name unless (name is "HUBOT" || brain.is_forgotten(name))
+    return result
+
   today: ->
     date = new Date()
     DAY = 1000 * 60 * 60  * 24
@@ -163,13 +176,7 @@ class Sandwicher
 
   show_not_ordered: ->
     brain = new SandwichBrain @robot, @msg
-    sandwichlessUsers = []
-    orderedUsers = for name, broodje of brain.broodjes_for_today()
-      name
-    for own key, user of @robot.brain.data.users
-      name = "#{user['name']}"
-      unless (orderedUsers.some (word) -> word is name)
-        sandwichlessUsers.push name unless (name is "HUBOT" || brain.is_forgotten(name))
+    sandwichlessUsers = brain.sandwichlessUsers
     if sandwichlessUsers && sandwichlessUsers.length
       @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
     else

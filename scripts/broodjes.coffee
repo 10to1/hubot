@@ -31,11 +31,11 @@ catchRequest = (message, path, action, options, callback) ->
 
 module.exports = (robot) ->
 
-  reminderJob = new cronJob '0 5 17 * * 1-5',
+  reminderJob = new cronJob '0 10 17 * * 1-5',
                 ->
-				  brain = new SandwichBrain robot, null
-				  sandwichlessUsers = brain.sandwichlessUsers
-			      if sandwichlessUsers && sandwichlessUsers.length
+                brain = new SandwichBrain robot, null
+                sandwichlessUsers = brain.sandwichlessUsers
+                if sandwichlessUsers && sandwichlessUsers.length
                     robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                 null
                 true

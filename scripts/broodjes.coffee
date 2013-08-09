@@ -34,11 +34,19 @@ module.exports = (robot) ->
   reminderJob = new cronJob '0 50 9 * * 1-5',
                 ->
                   brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers
+                  sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
                     robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                   else
                     robot.messageRoom "271712", "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt. Binnen 10 min verstuur ik de fax voor de broodjes."
+                null
+                true
+                'Europe/Brussels'
+
+  bestelJob = new cronJob '0 0 10 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  robot.messageRoom "271712", "hubot bestel alle broodjes!!"
                 null
                 true
                 'Europe/Brussels'
@@ -151,7 +159,7 @@ class SandwichBrain
 
   sandwichlessUsers: ->
     result = []
-    orderedUsers = for name, broodje of @robot.brain.broodjes_for_today()
+    orderedUsers = for name, broodje of broodjes_for_today()
       name
     for own key, user of @robot.brain.data.users
       name = "#{user['name']}"

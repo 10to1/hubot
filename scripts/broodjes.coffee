@@ -35,8 +35,8 @@ module.exports = (robot) ->
                 ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers
-                    if sandwichlessUsers && sandwichlessUsers.length
-                      robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                 null
                 true
                 'Europe/Brussels'

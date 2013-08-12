@@ -21,6 +21,7 @@
 #   inferis
 
 URL = "http://hummercatch.herokuapp.com/hubot"
+ROOM = "271712"
 
 cronJob         = require('cron').CronJob
 
@@ -36,17 +37,19 @@ module.exports = (robot) ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom "271712", "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                   else
-                    robot.messageRoom "271712", "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt. Binnen 10 min verstuur ik de fax voor de broodjes."
+                    robot.messageRoom ROOM, "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt. Binnen 10 min verstuur ik de fax voor de broodjes."
                 null
                 true
                 'Europe/Brussels'
 
   bestelJob = new cronJob '0 0 10 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  robot.messageRoom "271712", "hubot bestel alle broodjes!!"
+                  msg = new MessageRoomMessage robot
+                  msg.send "Het is zover. Ik ga de broodjes bestellen."
+                  handler = new Sandwicher robot, msg
+                  handler.order_all_broodjes true
                 null
                 true
                 'Europe/Brussels'
@@ -326,3 +329,13 @@ class Sandwicher
                 msg.send "De broodjes zijn besteld! BOOYAH!"
               else
                 msg.send err
+              
+# To use when you don't have a @msg object available
+class MessageRoomMessage
+  constructor: (robot) ->
+    @robot = robot
+    
+  send: (text) ->
+    robot.messageRoom ROOM, text
+
+

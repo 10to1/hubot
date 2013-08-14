@@ -336,6 +336,6 @@ class MessageRoomMessage
     @robot = robot
     
   send: (text) ->
-    robot.messageRoom ROOM, text
+    @robot.messageRoom ROOM, text
 
 

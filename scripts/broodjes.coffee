@@ -47,8 +47,7 @@ module.exports = (robot) ->
   bestelJob = new cronJob '0 0 10 * * 1-5',
                 ->
                   msg = new MessageRoomMessage robot
-                  msg.send "/play horror"
-                  msg.send "Het is zover. Ik ga de broodjes bestellen."
+                  msg.send "Good news everyone! Ik ga de broodjes bestellen!"
                   handler = new Sandwicher robot, msg
                   handler.order_all_broodjes true
                 null

@@ -43,6 +43,57 @@ module.exports = (robot) ->
                 null
                 true
                 'Europe/Brussels'
+  reminderJob2 = new cronJob '0 55 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
+                null
+                true
+                'Europe/Brussels'
+
+  reminderJob3 = new cronJob '0 40 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 20 min verstuur ik de fax voor de broodjes!"
+                null
+                true
+                'Europe/Brussels'
+
+  reminderJob4 = new cronJob '0 58 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
+                null
+                true
+                'Europe/Brussels'
+				
+  reminderJob5 = new cronJob '0 59 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
+                null
+                true
+                'Europe/Brussels'
+
+  reminderJob6 = new cronJob '15 59 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Ik *denk* dat ge te laat gaat zijn."
+                null
+                true
+                'Europe/Brussels'
+				
+
 
   bestelJob = new cronJob '0 0 10 * * 1-5',
                 ->

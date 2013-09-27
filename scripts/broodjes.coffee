@@ -377,7 +377,7 @@ class Sandwicher
           body: text
           , (err, success) ->
               if success?
-                msg.send "De broodjes zijn besteld! BOOYAH!"
+                msg.send "http://makeameme.org/media/created/Lunch-is-orderd.jpg"
               else
                 msg.send err
               

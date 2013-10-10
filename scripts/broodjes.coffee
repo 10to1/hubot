@@ -174,12 +174,12 @@ class SandwichBrain
     return result
 
   forget: (user) ->
+    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
     if user
-      @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
       @robot.brain.data.forgotten[user] = @today()
 
   unforget: (user) ->
-    @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
+    @init_forgotten_users
     delete @robot.brain.data.forgotten[user]
 
   forgotten_users: ->
@@ -187,12 +187,11 @@ class SandwichBrain
     Object.keys(@robot.brain.data.forgotten)
 
   is_forgotten: (user) ->
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
+    @init_forgotten_users
     @robot.brain.data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
     @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
     @robot.brain.data.broodjes[@today()][user] = broodje
 
@@ -210,6 +209,11 @@ class SandwichBrain
     was = @robot.brain.data.broodjes[@today()][user]
     @robot.brain.data.broodjes[@today()][user] = null
     return was
+	
+  init_forgotten_users: (user) ->
+    @forget("Nick Looijmans")
+    @forget("Tom Adriaenssen")
+    @forget("Evert Van den Bruel")
 
   sandwichlessUsers: ->
     result = []
@@ -218,7 +222,7 @@ class SandwichBrain
     for own key, user of @robot.brain.data.users
       name = "#{user['name']}"
       unless (orderedUsers.some (word) -> word is name)
-        result.push name unless (name is "HUBOT" || this.is_forgotten(name))
+        result.push name unless ((name is "HUBOT") || (this.is_forgotten(name)))
     return result
 
   today: ->

@@ -209,7 +209,7 @@ class SandwichBrain
     was = @robot.brain.data.broodjes[@today()][user]
     @robot.brain.data.broodjes[@today()][user] = null
     return was
-	
+
   init_forgotten_users: (user) ->
     @forget("Nick Looijmans")
     @forget("Tom Adriaenssen")

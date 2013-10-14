@@ -43,11 +43,62 @@ module.exports = (robot) ->
                 null
                 true
                 'Europe/Brussels'
+  reminderJob2 = new cronJob '0 55 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
+                null
+                true
+                'Europe/Brussels'
+
+  reminderJob3 = new cronJob '0 40 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 20 min verstuur ik de fax voor de broodjes!"
+                null
+                true
+                'Europe/Brussels'
+
+  reminderJob4 = new cronJob '0 58 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
+                null
+                true
+                'Europe/Brussels'
+				
+  reminderJob5 = new cronJob '0 59 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
+                null
+                true
+                'Europe/Brussels'
+
+  reminderJob6 = new cronJob '15 59 9 * * 1-5',
+                ->
+                  brain = new SandwichBrain robot, null
+                  sandwichlessUsers = brain.sandwichlessUsers()
+                  if sandwichlessUsers && sandwichlessUsers.length
+                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Ik *denk* dat ge te laat gaat zijn."
+                null
+                true
+                'Europe/Brussels'
+				
+
 
   bestelJob = new cronJob '0 0 10 * * 1-5',
                 ->
                   msg = new MessageRoomMessage robot
-                  msg.send "Het is zover. Ik ga de broodjes bestellen."
+                  msg.send "Good news everyone! Ik ga de broodjes bestellen!"
                   handler = new Sandwicher robot, msg
                   handler.order_all_broodjes true
                 null
@@ -123,12 +174,12 @@ class SandwichBrain
     return result
 
   forget: (user) ->
+    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
     if user
-      @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
       @robot.brain.data.forgotten[user] = @today()
 
   unforget: (user) ->
-    @robot.brain.data.forgotten = {} unless @robot.brain.data.forgotten
+    @init_forgotten_users
     delete @robot.brain.data.forgotten[user]
 
   forgotten_users: ->
@@ -136,12 +187,11 @@ class SandwichBrain
     Object.keys(@robot.brain.data.forgotten)
 
   is_forgotten: (user) ->
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
+    @init_forgotten_users
     @robot.brain.data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
     @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
     @robot.brain.data.broodjes[@today()][user] = broodje
 
@@ -160,6 +210,11 @@ class SandwichBrain
     @robot.brain.data.broodjes[@today()][user] = null
     return was
 
+  init_forgotten_users: (user) ->
+    @forget("Nick Looijmans")
+    @forget("Tom Adriaenssen")
+    @forget("Evert Van den Bruel")
+
   sandwichlessUsers: ->
     result = []
     orderedUsers = for name, broodje of this.broodjes_for_today()
@@ -167,7 +222,7 @@ class SandwichBrain
     for own key, user of @robot.brain.data.users
       name = "#{user['name']}"
       unless (orderedUsers.some (word) -> word is name)
-        result.push name unless (name is "HUBOT" || this.is_forgotten(name))
+        result.push name unless ((name is "HUBOT") || (this.is_forgotten(name)))
     return result
 
   today: ->
@@ -326,7 +381,7 @@ class Sandwicher
           body: text
           , (err, success) ->
               if success?
-                msg.send "De broodjes zijn besteld! BOOYAH!"
+                msg.send "http://makeameme.org/media/created/Lunch-is-orderd.jpg"
               else
                 msg.send err
               

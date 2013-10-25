@@ -20,6 +20,9 @@
 # Author:
 #   inferis
 
+# Om te faxen:
+# env.BROODJES_EMAIL:                  3232947336@efaxsend.com
+
 URL = "http://hummercatch.herokuapp.com/hubot"
 ROOM = "271712"
 
@@ -213,7 +216,7 @@ class SandwichBrain
   init_forgotten_users: (user) ->
     @forget("Nick Looijmans")
     @forget("Tom Adriaenssen")
-    @forget("Evert Van den Bruel")
+    @forget("Tim Van Damme")
 
   sandwichlessUsers: ->
     result = []

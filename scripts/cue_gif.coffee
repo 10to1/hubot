@@ -46,6 +46,9 @@ module.exports = (robot) ->
   robot.hear /cue @?(tomk|honcho)/, (msg) ->
     sendEpicGifForName("tomk", msg)
 
+  robot.hear /cue @?(koekoek)/, (msg) ->
+    sendEpicGifForName("koekoek", msg)
+
 epicGifForName = (name) ->
   hash = {
     pjaspers: "http://f.cl.ly/items/2w3V2T290K1d2x3c1O2c/animated-2012-09-14_14h-36m-39s.gif",
@@ -56,6 +59,7 @@ epicGifForName = (name) ->
     poeziemauw: "http://f.cl.ly/items/1y0p2H1U1k1W090f2r1A/animated-2012-09-27_15h-59m-51s.gif",
     reprazent: "http://f.cl.ly/items/0C2d062j0B1P3F0v3h47/animated-2012-08-29_15h-01m-36s.gif",
     pcbob: "http://f.cl.ly/items/2e432e1K0J2x111J331V/PCBOB.gif",
+    koekoek: "http://f.cl.ly/items/0m1l2q1F452B3D3f0835/Flint%202013-10-11%20at%2011.47.44%20am.gif",
     evert: "http://f.cl.ly/items/1j1b1N3Y381z2Z341Q32/animated-2012-09-11_14h-59m-58s.gif"}
   hash[name]
 

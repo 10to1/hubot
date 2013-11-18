@@ -18,6 +18,7 @@
 # Author:
 #   pjaspers
 #
+# The regex: http://rubular.com/r/oxVJIEOWmZ
 
 module.exports = (robot) ->
   robot.hear /every(\.|\s)*(fucking(\.|\s)+)*time(\.|\s)*/i, (msg) ->

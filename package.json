@@ -32,7 +32,8 @@
     "underscore": "1.5.1",
     "url": "0.7.9",
     "time": "*",
-    "cron": "*",
+      "cron": "*",
+      "hubot": "2.7.1",
     "hubot-slack": "~1.5.2"
   },
   "engines": {

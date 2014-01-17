@@ -179,13 +179,13 @@ class SandwichBrain
 
   forget: (user) ->
     @data.broodjes = {} unless @data.broodjes
-    @data.forgotten = {}
+    @data.forgotten = {} unless @data.forgotten
     if user
       @data.forgotten[user] = @today()
 
   unforget: (user) ->
     @init_forgotten_users
-    delete @data.forgotten[user] if @data.forgotten[user]
+    delete @data.forgotten[user] if @data.forgotten
 
   forgotten_users: ->
     return [] unless @data.forgotten

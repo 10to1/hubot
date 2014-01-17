@@ -184,7 +184,7 @@ class SandwichBrain
 
   unforget: (user) ->
     @init_forgotten_users
-    delete @data.forgotten[user]
+    delete @data.forgotten[user] if @data.forgotten[user]
 
   forgotten_users: ->
     return [] unless @data.forgotten

@@ -22,7 +22,9 @@ HUBOT_DOCUMENTATION_SECTIONS = [
   'commands'
   'notes'
   'author'
+  'authors'
   'examples'
+  'tags'
   'urls'
 ]
 
@@ -48,9 +50,21 @@ class Robot
     @logger    = new Log process.env.HUBOT_LOG_LEVEL or 'info'
 
     @parseVersion()
-    @setupExpress() if httpd
+    if httpd
+      @setupExpress()
+    else
+      @setupNullRouter()
     @pingIntervalId = null
+
     @loadAdapter adapterPath, adapter
+
+    @errorHandlers = []
+
+    @on 'error', (err, msg) =>
+      @invokeErrorHandlers(err, msg)
+    process.on 'uncaughtException', (err) =>
+      @emit 'error', err
+
 
   # Public: Adds a Listener that attempts to match incoming messages based on
   # a Regex.
@@ -133,6 +147,29 @@ class Robot
       callback
     )
 
+  # Public: Adds an error handler when an uncaught exception or user emitted
+  # error event occurs.
+  #
+  # callback - A Function that is called with the error object.
+  #
+  # Returns nothing.
+  error: (callback) ->
+    @errorHandlers.push callback
+
+  # Calls and passes any registered error handlers for unhandled exceptions or
+  # user emitted error events.
+  #
+  # err - An Error object.
+  # msg - An optional Response object that generated the error
+  #
+  # Returns nothing.
+  invokeErrorHandlers: (err, msg) ->
+    for errorHandler in @errorHandlers
+     try
+       errorHandler(err, msg)
+     catch errErr
+       @logger.error "while invoking error handler: #{errErr}\n#{errErr.stack}"
+
   # Public: Adds a Listener that triggers when no other text matchers match.
   #
   # callback - A Function that is called with a Response object.
@@ -158,7 +195,8 @@ class Robot
         results.push listener.call(message)
         break if message.done
       catch error
-        @logger.error "Unable to call the listener: #{error}\n#{error.stack}"
+        @emit('error', error, new @Response(@, message, []))
+
         false
     if message not instanceof CatchAllMessage and results.indexOf(true) is -1
       @receive new CatchAllMessage(message)
@@ -189,7 +227,7 @@ class Robot
     @logger.debug "Loading scripts from #{path}"
     Fs.exists path, (exists) =>
       if exists
-        for file in Fs.readdirSync(path)
+        for file in Fs.readdirSync(path).sort()
           @loadFile path, file
 
   # Public: Load scripts specfied in the `hubot-scripts.json` file.
@@ -211,12 +249,16 @@ class Robot
   # Returns nothing.
   loadExternalScripts: (packages) ->
     @logger.debug "Loading external-scripts from npm packages"
-    for pkg in packages
-      try
-        require(pkg) @
-      catch error
-        @logger.error "Error loading scripts from npm package - #{error}"
-        process.exit(1)
+    try
+      if packages instanceof Array
+        for pkg in packages
+          require(pkg)(@)
+      else
+        for pkg, scripts of packages
+          require(pkg)(@, scripts)
+    catch err
+      @logger.error "Error loading scripts from npm package - #{err.stack}"
+      process.exit(1)
 
   # Setup the Express server's defaults.
   #
@@ -229,13 +271,22 @@ class Robot
     express = require 'express'
 
     app = express()
+
+    app.use (req, res, next) =>
+      res.setHeader "X-Powered-By", "hubot/#{@name}"
+      next()
+
     app.use express.basicAuth user, pass if user and pass
     app.use express.query()
     app.use express.bodyParser()
     app.use express.static stat if stat
 
-    @server = app.listen process.env.PORT || 8080
-    @router = app
+    try
+      @server = app.listen(process.env.PORT || 8080, process.env.BIND_ADDRESS || '0.0.0.0')
+      @router = app
+    catch err
+      @logger.error "Error trying to start HTTP server: #{err}\n#{err.stack}"
+      process.exit(1)
 
     herokuUrl = process.env.HEROKU_URL
 
@@ -245,6 +296,18 @@ class Robot
         HttpClient.create("#{herokuUrl}hubot/ping").post() (err, res, body) =>
           @logger.info 'keep alive ping!'
       , 1200000
+
+  # Setup an empty router object
+  #
+  # returns nothing
+  setupNullRouter: ->
+    msg = "A script has tried registering a HTTP route while the HTTP server is disabled with --disabled-httpd."
+    @router =
+      get: ()=> @logger.warning msg
+      post: ()=> @logger.warning msg
+      put: ()=> @logger.warning msg
+      delete: ()=> @logger.warning msg
+
 
   # Load the adapter Hubot is going to use.
   #
@@ -384,8 +447,7 @@ class Robot
   #
   # Returns a String of the version number.
   parseVersion: ->
-    package_path = Path.join __dirname, '..', 'package.json'
-    pkg = require package_path
+    pkg = require Path.join __dirname, '..', 'package.json'
     @version = pkg.version
 
   # Public: Creates a scoped http client with chainable methods for

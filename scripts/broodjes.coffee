@@ -179,6 +179,7 @@ class SandwichBrain
 
   forget: (user) ->
     @data.broodjes = {} unless @data.broodjes
+    @data.forgotten = {}
     if user
       @data.forgotten[user] = @today()
 

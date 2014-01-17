@@ -75,7 +75,7 @@ module.exports = (robot) ->
                 null
                 true
                 'Europe/Brussels'
-				
+
   reminderJob5 = new cronJob '0 59 9 * * 1-5',
                 ->
                   brain = new SandwichBrain robot, null
@@ -95,7 +95,7 @@ module.exports = (robot) ->
                 null
                 true
                 'Europe/Brussels'
-				
+
 
 
   bestelJob = new cronJob '0 0 10 * * 1-5',
@@ -161,13 +161,14 @@ env     = process.env
 class SandwichBrain
   constructor: (robot, msg) ->
     @robot = robot
+    @data = @robot.brain.data || {users: {}, _private: {}}
     @msg = msg
 
   all_broodjes_for_user: (user) ->
-    return [] unless @robot.brain.data.broodjes
+    return [] unless @data.broodjes
 
     result = []
-    for day, order of @robot.brain.data.broodjes
+    for day, order of @data.broodjes
       if user?
         if order[user]
           result.push order[user]
@@ -177,40 +178,41 @@ class SandwichBrain
     return result
 
   forget: (user) ->
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
+    @data.broodjes = {} unless @data.broodjes
+    @data.forgotten = {} unless @data.forgotten
     if user
-      @robot.brain.data.forgotten[user] = @today()
+      @data.forgotten[user] = @today()
 
   unforget: (user) ->
     @init_forgotten_users
-    delete @robot.brain.data.forgotten[user]
+    delete @data.forgotten[user] if @data.forgotten
 
   forgotten_users: ->
-    return [] unless @robot.brain.data.forgotten
-    Object.keys(@robot.brain.data.forgotten)
+    return [] unless @data.forgotten
+    Object.keys(@data.forgotten)
 
   is_forgotten: (user) ->
     @init_forgotten_users
-    @robot.brain.data.forgotten[user]
+    @data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
-    @robot.brain.data.broodjes[@today()][user] = broodje
+    @data.broodjes[@today()] = {} unless @data.broodjes[@today()]
+    @data.broodjes[@today()][user] = broodje
 
   broodjes_for_today: ->
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
-    @robot.brain.data.broodjes[@today()]
+    @data.broodjes = {} unless @data.broodjes
+    @data.broodjes[@today()]
 
   no_broodjes_for_today: ->
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
-    @robot.brain.data.broodjes[@today()] = null
+    @data.broodjes = {} unless @data.broodjes
+    @data.broodjes[@today()] = null
 
   no_broodje_for_today: (user) ->
-    @robot.brain.data.broodjes = {} unless @robot.brain.data.broodjes
-    @robot.brain.data.broodjes[@today()] = {} unless @robot.brain.data.broodjes[@today()]
-    was = @robot.brain.data.broodjes[@today()][user]
-    @robot.brain.data.broodjes[@today()][user] = null
+    @data.broodjes = {} unless @data.broodjes
+    @data.broodjes[@today()] = {} unless @data.broodjes[@today()]
+    was = @data.broodjes[@today()][user]
+    @data.broodjes[@today()][user] = null
     return was
 
   init_forgotten_users: (user) ->
@@ -222,7 +224,7 @@ class SandwichBrain
     result = []
     orderedUsers = for name, broodje of this.broodjes_for_today()
       name
-    for own key, user of @robot.brain.data.users
+    for own key, user of @data.users
       name = "#{user['name']}"
       unless (orderedUsers.some (word) -> word is name)
         result.push name unless ((name is "HUBOT") || (this.is_forgotten(name)))
@@ -351,7 +353,7 @@ class Sandwicher
             name = ""
     else
       text += "Vandaag hebben wij geen broodjes nodig."
-      
+
     text += "-------------------------------------------------------------------------------------------\n"
     return text
 
@@ -388,13 +390,11 @@ class Sandwicher
                 msg.send "http://makeameme.org/media/created/Lunch-is-orderd.jpg"
               else
                 msg.send err
-              
+
 # To use when you don't have a @msg object available
 class MessageRoomMessage
   constructor: (robot) ->
     @robot = robot
-    
+
   send: (text) ->
     @robot.messageRoom ROOM, text
-
-

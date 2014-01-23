@@ -2,10 +2,11 @@
 #   10to1's Broodjes Management System
 #
 # Dependencies:
-#   None
+#   "cron"
 #
 # Configuration:
-#   None
+#   BROODJES_ROOMS - comma-separated list of rooms
+#   BROODJES_EMAIL - email address where to send to
 #
 # Commands:
 #   hubot broodjes - Toont een lijst van bestelde broodjes
@@ -20,11 +21,7 @@
 # Author:
 #   inferis
 
-# Om te faxen:
-# env.BROODJES_EMAIL:                  3232947336@efaxsend.com
-
 URL = "http://hummercatch.herokuapp.com/hubot"
-ROOM = "271712"
 
 cronJob         = require('cron').CronJob
 
@@ -35,14 +32,20 @@ catchRequest = (message, path, action, options, callback) ->
 
 module.exports = (robot) ->
 
+  rooms = ["271712"]
+  if process.env.BROODJES_ROOMS
+    rooms = process.env.BROODJES_ROOMS.split(',')
+  end
+  broadcast = new Broadcaster robot, rooms
+
   reminderJob = new cronJob '0 50 9 * * 1-5',
                 ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
+                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
                   else
-                    robot.messageRoom ROOM, "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt. Binnen 10 min verstuur ik de fax voor de broodjes."
+                    broadcast.send "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt. Binnen 10 min verstuur ik de fax voor de broodjes."
                 null
                 true
                 'Europe/Brussels'
@@ -51,7 +54,7 @@ module.exports = (robot) ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
+                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
                 null
                 true
                 'Europe/Brussels'
@@ -61,7 +64,7 @@ module.exports = (robot) ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 20 min verstuur ik de fax voor de broodjes!"
+                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 20 min verstuur ik de fax voor de broodjes!"
                 null
                 true
                 'Europe/Brussels'
@@ -71,7 +74,7 @@ module.exports = (robot) ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
+                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
                 null
                 true
                 'Europe/Brussels'
@@ -81,7 +84,7 @@ module.exports = (robot) ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
+                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
                 null
                 true
                 'Europe/Brussels'
@@ -91,7 +94,7 @@ module.exports = (robot) ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
-                    robot.messageRoom ROOM, "#{sandwichlessUsers.join(', ')} Ik *denk* dat ge te laat gaat zijn."
+                    broadcast.send "#{sandwichlessUsers.join(', ')} Ik *denk* dat ge te laat gaat zijn."
                 null
                 true
                 'Europe/Brussels'
@@ -100,8 +103,7 @@ module.exports = (robot) ->
 
   bestelJob = new cronJob '0 0 10 * * 1-5',
                 ->
-                  msg = new MessageRoomMessage robot
-                  msg.send "Good news everyone! Ik ga de broodjes bestellen!"
+                  broadcast.send "Good news everyone! Ik ga de broodjes bestellen!"
                   handler = new Sandwicher robot, msg
                   handler.order_all_broodjes true
                 null
@@ -392,9 +394,10 @@ class Sandwicher
                 msg.send err
 
 # To use when you don't have a @msg object available
-class MessageRoomMessage
-  constructor: (robot) ->
+class Broadcaster
+  constructor: (robot, rooms) ->
     @robot = robot
+    @rooms = rooms
 
   send: (text) ->
-    @robot.messageRoom ROOM, text
+    @robot.messageRoom @rooms, text

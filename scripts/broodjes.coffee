@@ -35,7 +35,7 @@ module.exports = (robot) ->
   rooms = ["271712"]
   if process.env.BROODJES_ROOMS
     rooms = process.env.BROODJES_ROOMS.split(',')
-  end
+
   broadcast = new Broadcaster robot, rooms
 
   reminderJob = new cronJob '0 50 9 * * 1-5',

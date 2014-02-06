@@ -33,4 +33,6 @@
  "excuse.coffee",
  "foass.coffee",
  "sensitive.coffee",
- "gorbypuff.coffee"]
+ "gorbypuff.coffee",
+ "mtg.coffee",
+ "httpcat.coffee"]

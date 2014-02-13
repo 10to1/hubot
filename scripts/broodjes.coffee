@@ -312,7 +312,7 @@ class Sandwicher
 
   show_all_broodjes: ->
     brain = new SandwichBrain @robot, @msg
-      broodjes = brain.broodjes_for_today()
+    broodjes = brain.broodjes_for_today()
     contains_broodjes = no
     for name, broodje of broodjes
         if broodje?

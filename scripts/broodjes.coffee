@@ -231,7 +231,7 @@ class SandwichBrain
     orderedUsers = for name, broodje of this.broodjes_for_today()
       name
     for own key, user of @data.users
-      name = "#{user['name']}"
+      name = user.name
       unless (orderedUsers.some (word) -> word is name)
         result.push name unless ((name is "HUBOT") || (this.is_forgotten(name)))
     return result

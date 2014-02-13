@@ -18,6 +18,7 @@ class TextMessage extends Message
   # text - A String message.
   # id   - A String of the message ID.
   constructor: (@user, @text, @id) ->
+    console.log @text
     super @user
 
   # Determines if the message matches the given regex.

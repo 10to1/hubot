@@ -13,6 +13,7 @@ Response = require './response'
 HUBOT_DEFAULT_ADAPTERS = [
   'campfire'
   'shell'
+  'slack'
 ]
 
 HUBOT_DOCUMENTATION_SECTIONS = [

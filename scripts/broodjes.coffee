@@ -228,8 +228,9 @@ class SandwichBrain
 
   sandwichlessUsers: ->
     console.log "In de sandwhichless"
+    console.log "Broodjes: #{@broodjes_for_today()}"
     result = []
-    orderedUsers = for name, broodje of this.broodjes_for_today()
+    orderedUsers = for name, broodje of @broodjes_for_today()
       name
     console.log "OrderedUsers: #{orderedusers}"
     for own key, user of @data.users
@@ -311,7 +312,7 @@ class Sandwicher
 
   show_all_broodjes: ->
     brain = new SandwichBrain @robot, @msg
-    broodjes = brain.broodjes_for_today()
+      broodjes = brain.broodjes_for_today()
     contains_broodjes = no
     for name, broodje of broodjes
         if broodje?

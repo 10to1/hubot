@@ -230,8 +230,8 @@ class SandwichBrain
     console.log "In de sandwhichless"
     console.log "Users: #{Object.keys(@broodjes_for_today())}"
     result = []
-    orderedUsers = name for name, broodje of @broodjes_for_today()
-    console.log "OrderedUsers: #{orderedusers}"
+    orderedUsers = Object.keys @broodjes_for_today()
+    console.log "OrderedUsers: #{orderedUsers}"
     for own key, user of @data.users
       name = user.name
       console.log "Found: #{user}"

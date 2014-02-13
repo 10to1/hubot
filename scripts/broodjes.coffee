@@ -227,11 +227,14 @@ class SandwichBrain
     @forget("Tim Van Damme")
 
   sandwichlessUsers: ->
+    console.log "In de sandwhichless"
     result = []
     orderedUsers = for name, broodje of this.broodjes_for_today()
       name
+    console.log "OrderedUsers: #{orderedusers}"
     for own key, user of @data.users
       name = user.name
+      console.log "Found: #{user}"
       unless (orderedUsers.some (word) -> word is name)
         result.push name unless ((name is "HUBOT") || (this.is_forgotten(name)))
     return result

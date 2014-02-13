@@ -234,9 +234,10 @@ class SandwichBrain
     console.log "OrderedUsers: #{orderedUsers}"
     for own key, user of @data.users
       name = user.name
-      console.log "Found: #{user}"
+      console.log "Found: #{user.name}"
       unless (orderedUsers.some (word) -> word is name)
         result.push name unless ((name is "HUBOT") || (this.is_forgotten(name)))
+    console.log "Result: #{result}"
     return result
 
   today: ->
@@ -260,6 +261,7 @@ class Sandwicher
   show_not_ordered: ->
     brain = new SandwichBrain @robot, @msg
     sandwichlessUsers = brain.sandwichlessUsers()
+    console.log "Sandwhich less: #{sandwichlessUsers}"
     if sandwichlessUsers && sandwichlessUsers.length
       @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
     else

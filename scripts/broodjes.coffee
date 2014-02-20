@@ -184,6 +184,7 @@ class SandwichBrain
     return result
 
   forget: (user) ->
+    console.log "Forget #{user}"
     @data.broodjes = {} unless @data.broodjes
     @data.forgotten = {} unless @data.forgotten
     if user

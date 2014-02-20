@@ -167,31 +167,39 @@ env     = process.env
 class SandwichBrain
   constructor: (robot, msg) ->
     @robot = robot
-    @data = @robot.brain.data || {users: {}, _private: {}}
+    @data = @robot.brain.data
     @msg = msg
+    @today = (new Date()).getTime() / 1000 * 60 * 60 * 24
+
+  setup: ->
+    @ensure_data()
+    @pour_a_50_for_the_homies()
+
+  ensure_data: ->
+    @data ?= {users: {}, _private: {}}
+    @data.broodjes ?= {}
+    @data.forgotten ?= {}
+    @data.broodjes[@today] ?= {}
+
+  pour_a_50_for_the_homies: ->
+    @data.forgotten["Nick Looijmans"] = "FFING CANADIAN"
+    @data.forgotten["Tim Van Damme"] = "TIMMIE!"
+    @data.forgotten["Tom Adriaenssen"] = "DOTZERS"
 
   all_broodjes_for_user: (user) ->
-    return [] unless @data.broodjes
-
-    result = []
+    result = [] unless user
     for day, order of @data.broodjes
-      if user?
-        if order[user]
+      if order[user]
           result.push order[user]
       else
         for u, broodje of order
           result.push broodje if broodje?
-    return result
+    result
 
   forget: (user) ->
-    console.log "Forget #{user}"
-    @data.broodjes = {} unless @data.broodjes
-    @data.forgotten = {} unless @data.forgotten
-    if user
-      @data.forgotten[user] = @today()
+    @data.forgotten[user] = @today if user
 
   unforget: (user) ->
-    @init_forgotten_users
     delete @data.forgotten[user] if @data.forgotten
 
   forgotten_users: ->
@@ -199,55 +207,31 @@ class SandwichBrain
     Object.keys(@data.forgotten)
 
   is_forgotten: (user) ->
-    console.log "In the forgotten"
-    @init_forgotten_users()
-    console.log "Data: #{@data.forgotten}"
     @data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    @data.broodjes[@today()] = {} unless @data.broodjes[@today()]
-    @data.broodjes[@today()][user] = broodje
+    @data.broodjes[@today][user] = broodje
 
   broodjes_for_today: ->
-    @data.broodjes = {} unless @data.broodjes
-    @data.broodjes[@today()]
+    @data.broodjes[@today]
 
   no_broodjes_for_today: ->
-    @data.broodjes = {} unless @data.broodjes
-    @data.broodjes[@today()] = null
+    @data.broodjes[@today] = null
 
   no_broodje_for_today: (user) ->
-    @data.broodjes = {} unless @data.broodjes
-    @data.broodjes[@today()] = {} unless @data.broodjes[@today()]
-    was = @data.broodjes[@today()][user]
-    @data.broodjes[@today()][user] = null
-    return was
-
-  init_forgotten_users: (user) ->
-    @forget("Nick Looijmans")
-    @forget("Tom Adriaenssen")
-    @forget("Tim Van Damme")
-    console.log "Forgot all the user"
+    old_bun = @data.broodjes[@today][user]
+    @data.broodjes[@today][user] = null
+    old_bun
 
   sandwichlessUsers: ->
-    console.log "In de sandwhichless"
-    console.log "Users: #{Object.keys(@broodjes_for_today())}"
     result = []
     orderedUsers = Object.keys @broodjes_for_today()
-    console.log "OrderedUsers: #{orderedUsers}"
     for own key, user of @data.users
       name = user.name
-      console.log "Found: #{user.name}"
       unless (orderedUsers.some (word) -> word is name)
         result.push name unless ((name is "HUBOT") || (@is_forgotten(name)))
-    console.log "Result: #{result}"
     return result
-
-  today: ->
-    date = new Date()
-    DAY = 1000 * 60 * 60  * 24
-    Math.round(date.getTime() / DAY)
 
 class Sandwicher
   constructor: (robot, msg) ->
@@ -265,7 +249,6 @@ class Sandwicher
   show_not_ordered: ->
     brain = new SandwichBrain @robot, @msg
     sandwichlessUsers = brain.sandwichlessUsers()
-    console.log "Sandwhich less: #{sandwichlessUsers}"
     if sandwichlessUsers && sandwichlessUsers.length
       @msg.send "Nog niet besteld: #{sandwichlessUsers.join(', ')}"
     else

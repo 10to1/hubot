@@ -198,7 +198,9 @@ class SandwichBrain
     Object.keys(@data.forgotten)
 
   is_forgotten: (user) ->
+    console.log "In the forgotten"
     @init_forgotten_users
+    console.log "Data: #{@data}"
     @data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->
@@ -225,6 +227,7 @@ class SandwichBrain
     @forget("Nick Looijmans")
     @forget("Tom Adriaenssen")
     @forget("Tim Van Damme")
+    console.log "Forgot all the user"
 
   sandwichlessUsers: ->
     console.log "In de sandwhichless"
@@ -236,7 +239,7 @@ class SandwichBrain
       name = user.name
       console.log "Found: #{user.name}"
       unless (orderedUsers.some (word) -> word is name)
-        result.push name unless ((name is "HUBOT"))
+        result.push name unless ((name is "HUBOT") || (@is_forgotten(name)))
     console.log "Result: #{result}"
     return result
 

@@ -201,7 +201,7 @@ class SandwichBrain
   is_forgotten: (user) ->
     console.log "In the forgotten"
     @init_forgotten_users
-    console.log "Data: #{@data}"
+    console.log "Data: #{@data.forgotten}"
     @data.forgotten[user]
 
   order_broodje_for_today: (user, broodje) ->

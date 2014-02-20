@@ -169,10 +169,11 @@ class SandwichBrain
     @robot = robot
     @data = @robot.brain.data
     @msg = msg
-    @today = (new Date()).getTime() / 1000 * 60 * 60 * 24
     @setup()
 
   setup: ->
+    date = new Date()
+    @today = [date.getFullYear(), (date.getMonth() + 1), date.getDate()].join("/")
     @ensure_data()
     @pour_a_50_for_the_homies()
 
@@ -212,7 +213,10 @@ class SandwichBrain
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
+    console.log "Current broodjes: #{@data.broodjes}"
+    console.log "Current today (#{@today}: #{@data.broodjes[@today]}"
     @data.broodjes[@today][user] = broodje
+    console.log "Broodjes => #{@data.broodjes}"
 
   broodjes_for_today: ->
     @data.broodjes[@today]

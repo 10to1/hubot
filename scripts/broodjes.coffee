@@ -213,10 +213,7 @@ class SandwichBrain
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    console.log "Current broodjes: #{@data.broodjes}"
-    console.log "Current today (#{@today}: #{@data.broodjes[@today]}"
     @data.broodjes[@today][user] = broodje
-    console.log "Broodjes => #{@data.broodjes}"
 
   broodjes_for_today: ->
     @data.broodjes[@today]
@@ -275,7 +272,7 @@ class Sandwicher
     brain = new SandwichBrain @robot, @msg
     broodjes = brain.broodjes_for_today()
 
-    @msg.send "Wa is dees? Geen broodjes voor ulle, ja. Maagden!"
+    @msg.send "Geen broodjes vandaag. Op naar de Quick!"
 
     contains_broodjes = no
     for name, broodje of broodjes
@@ -290,9 +287,9 @@ class Sandwicher
     name = @_fix_name name
     ok = brain.no_broodje_for_today(name)
     if ok?
-      @msg.send "Allez dan, geen broodje voor #{name}. Maaagd!"
+      @msg.send "#{name} had jij besteld? Ik ben het al vergeten."
     else
-      @msg.send "Jonge, #{name} heeft wel niks besteld he! Maaagd!"
+      @msg.send "#{name} as you wish."
 
   order_broodje_for_today: (name, broodje) ->
     brain = new SandwichBrain @robot, @msg

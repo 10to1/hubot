@@ -236,7 +236,7 @@ class SandwichBrain
       name = user.name
       console.log "Found: #{user.name}"
       unless (orderedUsers.some (word) -> word is name)
-        result.push name unless ((name is "HUBOT") || (@is_forgotten(name)))
+        result.push name unless ((name is "HUBOT"))
     console.log "Result: #{result}"
     return result
 

@@ -5,6 +5,8 @@ googleNameForName = (name) ->
     "chromecast": "Google Play Chromecast",
     "chrome": "Google Play Chrome",
     "google music": "Google Play Music",
+    "hangouts": "Google Play Hangouts",
+    "gtalk": "Google Play Talk"
   }
   hash[name]
 

@@ -200,7 +200,7 @@ class SandwichBrain
 
   is_forgotten: (user) ->
     console.log "In the forgotten"
-    @init_forgotten_users
+    @init_forgotten_users()
     console.log "Data: #{@data.forgotten}"
     @data.forgotten[user]
 

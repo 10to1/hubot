@@ -170,6 +170,7 @@ class SandwichBrain
     @data = @robot.brain.data
     @msg = msg
     @today = (new Date()).getTime() / 1000 * 60 * 60 * 24
+    @setup()
 
   setup: ->
     @ensure_data()
@@ -200,7 +201,7 @@ class SandwichBrain
     @data.forgotten[user] = @today if user
 
   unforget: (user) ->
-    delete @data.forgotten[user] if @data.forgotten
+    delete @data.forgotten[user]
 
   forgotten_users: ->
     return [] unless @data.forgotten

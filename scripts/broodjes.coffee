@@ -214,6 +214,7 @@ class SandwichBrain
   broodjes_for_today: ->
     @data.broodjes[@today]
 
+  # TODO: Makes this set null to all users so the cron doesn't complain anymore
   no_broodjes_for_today: ->
     @data.broodjes[@today] = null
 

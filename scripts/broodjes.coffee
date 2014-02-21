@@ -40,7 +40,6 @@ module.exports = (robot) ->
 
   reminderJob = new cronJob '0 50 9 * * 1-5',
                 ->
-                  broadcast.send "Cron van 9h50"
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
@@ -54,7 +53,6 @@ module.exports = (robot) ->
                 ->
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
-                  broadcast.send "Cron van 9h55, #{sandwichlessUsers}"
                   if sandwichlessUsers && sandwichlessUsers.length
                     broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
                 null
@@ -63,7 +61,6 @@ module.exports = (robot) ->
 
   reminderJob3 = new cronJob '0 40 9 * * 1-5',
                 ->
-                  broadcast.send "Cron van 9h40"
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length
@@ -74,7 +71,6 @@ module.exports = (robot) ->
 
   reminderJob4 = new cronJob '0 58 9 * * 1-5',
                 ->
-                  broadcast.send "Cron van 9h58"
                   brain = new SandwichBrain robot, null
                   sandwichlessUsers = brain.sandwichlessUsers()
                   if sandwichlessUsers && sandwichlessUsers.length

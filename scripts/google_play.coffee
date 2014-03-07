@@ -1,4 +1,5 @@
 googleNameForName = (name) ->
+  name = (name || "").toLowerCase()
   hash = {
     "gmail": "Google Play Mail",
     "android": "Google Play OS",

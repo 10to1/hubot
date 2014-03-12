@@ -17,6 +17,8 @@ module.exports = (robot) ->
     return if robot.name == msg.message.user.name
     return if /^</.test(msg.message.text)
     return if /^http/.test(msg.message.text)
+    return if /:label/.test(msg.message.text)
+    return if /:name/.test(msg.message.text)
     keyword = msg.match[0]
     keyword = "google music" if keyword == "gmusic"
     keyword = "google maps" if keyword == "google map"

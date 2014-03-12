@@ -15,8 +15,8 @@ googleNameForName = (name) ->
 module.exports = (robot) ->
   robot.hear /hangouts|gtalk|gmail|google maps?|android|chromecast|chrome|google music|gmusic/ig, (msg) ->
     return if robot.name == msg.message.user.name
-    return if /^</.test(msg.message.test)
-    return if /^http/.test(msg.message.test)
+    return if /^</.test(msg.message.text)
+    return if /^http/.test(msg.message.text)
     keyword = msg.match[0]
     keyword = "google music" if keyword == "gmusic"
     keyword = "google maps" if keyword == "google map"

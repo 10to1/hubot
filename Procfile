@@ -1,1 +1,1 @@
-web: bin/hubot -a $HUBOT_ADAPTER -n kato
+web: bin/hubot -a $HUBOT_ADAPTER -n Hubot

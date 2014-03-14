@@ -1,1 +1,1 @@
-web: bin/hubot -a $HUBOT_ADAPTER -n Hubot
+app: bin/hubot -a $HUBOT_ADAPTER -n Hubot

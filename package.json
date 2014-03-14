@@ -31,7 +31,8 @@
     "underscore": "1.5.1",
     "url": "0.7.9",
     "time": "*",
-      "cron": "*"
+      "cron": "*",
+      "hubot-kato": "0.0.6"
   },
   "engines": {
     "node": ">= 0.8.x",

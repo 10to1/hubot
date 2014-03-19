@@ -310,6 +310,8 @@ class Sandwicher
         @msg.send "Niemand heeft honger precies, er zijn nog geen broodjes besteld vandaag."
 
   order_all_broodjes: (send) ->
+    @msg.send "NOT ORDERING THE BROODJES"
+    return
     mail = @_generate_mail()
     if mail? and mail.length > 0
       if send

@@ -21,7 +21,7 @@
 # Author:
 #   inferis
 
-URL = "http://hummercatch.herokuapp.com/hubot"
+URL = "http://tto-foodz.herokuapp.com/hubot"
 
 cronJob         = require('cron').CronJob
 
@@ -141,11 +141,6 @@ module.exports = (robot) ->
     else
       broodje = msg.match[5]
     handler.order_broodje_for_today msg.match[2], broodje
-    catchRequest msg, "/order", "post", {order: broodje}, (err, res, body) ->
-      if res.statusCode is 200
-        # msg.send "#{body}"
-      else
-        # msg.reply "Kon niet parsen: #{err}"
 
   robot.respond /broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg
@@ -210,6 +205,11 @@ class SandwichBrain
   order_broodje_for_today: (user, broodje) ->
     @unforget user
     @data.broodjes[@today][user] = broodje
+    catchRequest msg, "/order", "post", {username: user, metadata: broodje}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+      else
+        console.log "Error: #{err}"
 
   broodjes_for_today: ->
     @data.broodjes[@today]
@@ -221,6 +221,11 @@ class SandwichBrain
   no_broodje_for_today: (user) ->
     old_bun = @data.broodjes[@today][user]
     @data.broodjes[@today][user] = null
+    catchRequest msg, "/order", "post", {username: user, delete: "X"}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+      else
+        console.log "Error: #{err}"
     old_bun
 
   sandwichlessUsers: ->

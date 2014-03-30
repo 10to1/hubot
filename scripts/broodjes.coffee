@@ -26,9 +26,16 @@ URL = "http://tto-foodz.herokuapp.com/hubot"
 cronJob         = require('cron').CronJob
 
 catchRequest = (message, path, action, options, callback) ->
-
+  console.log "Making the call"
   message.http("#{URL}#{path}").query(options)[action]() (err, res, body) ->
     callback(err,res,body)
+
+postRequest = (msg, path, params, callback) ->
+  stringParams = JSON.stringify params
+  msg.http("#{URL}#{path}")
+    .headers("Content-type": "application/json",'Accept': 'application/json')
+    .post(stringParams) (err, res, body) ->
+      callback(err, res, body)
 
 module.exports = (robot) ->
 
@@ -204,12 +211,12 @@ class SandwichBrain
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    @data.broodjes[@today][user] = broodje
-    catchRequest msg, "/order", "post", {username: user, metadata: broodje}, (err, res, body) ->
+    postRequest @msg, "/orders", {username: user, metadata: broodje}, (err, res, body) ->
       if res.statusCode is 200
         console.log "OK: #{body}"
       else
         console.log "Error: #{err}"
+    @data.broodjes[@today][user] = broodje
 
   broodjes_for_today: ->
     @data.broodjes[@today]
@@ -221,7 +228,7 @@ class SandwichBrain
   no_broodje_for_today: (user) ->
     old_bun = @data.broodjes[@today][user]
     @data.broodjes[@today][user] = null
-    catchRequest msg, "/order", "post", {username: user, delete: "X"}, (err, res, body) ->
+    postRequest @msg, "/orders", {username: user, delete: "X"}, (err, res, body) ->
       if res.statusCode is 200
         console.log "OK: #{body}"
       else

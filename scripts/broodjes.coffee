@@ -224,6 +224,10 @@ class SandwichBrain
   # TODO: Makes this set null to all users so the cron doesn't complain anymore
   no_broodjes_for_today: ->
     @data.broodjes[@today] = null
+    for own key, user of @data.users
+      name = user.name
+      unless ((name is "HUBOT") || (@is_forgotten(name)))
+        @no_broodjes_for_today user
 
   no_broodje_for_today: (user) ->
     old_bun = @data.broodjes[@today][user]
@@ -283,11 +287,11 @@ class Sandwicher
 
     @msg.send "Geen broodjes vandaag. Op naar de Quick!"
 
-    contains_broodjes = no
-    for name, broodje of broodjes
-        if broodje != null
-          contains_broodjes = yes
-          @msg.send "Hey #{name}, uw broodje is geannuleerd! #fdj"
+    # contains_broodjes = no
+    # for name, broodje of broodjes
+    #     if broodje != null
+    #       contains_broodjes = yes
+    #       @msg.send "Hey #{name}, uw broodje is geannuleerd! #fdj"
 
     brain.no_broodjes_for_today()
 

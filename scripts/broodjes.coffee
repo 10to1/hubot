@@ -223,7 +223,7 @@ class SandwichBrain
 
   # TODO: Makes this set null to all users so the cron doesn't complain anymore
   no_broodjes_for_today: ->
-    @data.broodjes[@today] = null
+    @data.broodjes[@today] = {}
     for own key, user of @data.users
       name = user.name
       unless ((name is "HUBOT") || (@is_forgotten(name)))

@@ -186,6 +186,7 @@ class SandwichBrain
     @data.forgotten["Tim Van Damme"] = "TIMMIE!"
     @data.forgotten["Tom Adriaenssen"] = "DOTZERS"
     @data.forgotten["Evert Van den Bruel"] = "BEVERT"
+    @data.forgotten["Jelle Vandebeeck"] = "jelle"
 
   all_broodjes_for_user: (user) ->
     result = [] unless user

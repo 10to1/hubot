@@ -33,7 +33,7 @@
         "time": "*",
         "cron": "*",
         "hubot-plusplus": "1.0.x",
-        "hubot-worldcup": ">= 0.0.0",
+        "hubot-worldcup": "hubot-scripts/hubot-worldcup",
         "hubot-soon": ">= 1.0.0",
         "hubot-business-cat": "1.0.x",
         "hubot-angry": "pjaspers/hubot-angry"

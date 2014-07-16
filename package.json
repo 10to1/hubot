@@ -36,7 +36,9 @@
         "hubot-worldcup": "hubot-scripts/hubot-worldcup",
         "hubot-soon": ">= 1.0.0",
         "hubot-business-cat": "1.0.x",
-        "hubot-angry": "pjaspers/hubot-angry"
+        "hubot-angry": "pjaspers/hubot-angry",
+        "hubot-reaction": ">= 0.0.6",
+        "hubot-euphemism": ">= 1.0.1"
     },
     "engines": {
         "node": ">= 0.8.x",

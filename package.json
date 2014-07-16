@@ -38,7 +38,8 @@
         "hubot-business-cat": "1.0.x",
         "hubot-angry": "pjaspers/hubot-angry",
         "hubot-reaction": ">= 0.0.6",
-        "hubot-euphemism": ">= 1.0.1"
+        "hubot-euphemism": ">= 1.0.1",
+        "hubot-bobsisms": "pjaspers/hubot-bobsisms"
     },
     "engines": {
         "node": ">= 0.8.x",

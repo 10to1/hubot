@@ -151,6 +151,18 @@ Hubot can make HTTP calls on your behalf to integrate & consume third party APIs
       # your code here
 ```
 
+A post looks like:
+
+```coffeescript
+  data = JSON.stringify({
+    foo: 'bar'
+  })
+  robot.http("https://midnight-train")
+    .post(data) (err, res, body) ->
+      # your code here
+```
+
+
 `err` is an error encountered on the way, if one was encountered. You'll generally want to check for this and handle accordingly:
 
 ```coffeescript
@@ -390,7 +402,7 @@ module.exports = (robot) ->
 
 ## HTTP Listener
 
-Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to server up HTTP requests. It listens on the port specified by the `PORT` environment variable, and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EPXRESS_PASSWORD`. It can automatically server static files by setting `EXPRESS_STATIC`.
+Hubot includes support for the [express](http://expressjs.com/guide.html) web framework to serve up HTTP requests. It listens on the port specified by the `PORT` environment variable, and defaults to 8080. An instance of an express application is available at `robot.router`. It can be protected with username and password by specifying `EXPRESS_USER` and `EPXRESS_PASSWORD`. It can automatically serve static files by setting `EXPRESS_STATIC`.
 
 The most common use of this is for providing HTTP end points for services with webhooks to push to, and have those show up in chat.
 
@@ -398,11 +410,13 @@ The most common use of this is for providing HTTP end points for services with w
 ```coffeescript
 module.exports = (robot) ->
   robot.router.post '/hubot/chatsecrets/:room', (req, res) ->
-    room = req.params.room
-    data = JSON.parse req.body.payload
+    room   = req.params.room
+    data   = JSON.parse req.body.payload
     secret = data.secret
 
     robot.messageRoom room, "I have a secret: #{secret}"
+
+    res.send 'OK'
 ```
 
 ## Events
@@ -551,6 +565,13 @@ module.exports = (robot) ->
       msg.send "#{name} is user - #{user}"
 ```
 
+## Script Load Order
+
+Scripts are loaded from the `scripts/` directory. They are loaded in alphabetical order, so you can expect a consistent load order of scripts. For example:
+
+* `scripts/1-first.coffee`
+* `scripts/_second.coffee`
+* `scripts/third.coffee`
 
 ## Creating A Script Package
 

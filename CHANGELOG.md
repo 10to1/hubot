@@ -1,3 +1,25 @@
+v2.7.5
+======
+
+* Fix Campfire adapter to specify a User-Agent
+
+v2.7.4
+======
+
+* Update Campfire adapter to specify a User-Agent
+
+v2.7.3
+======
+
+* Updated list of adapters in documentation
+* Document script load order
+* Support any file extension for script that node supports
+
+v2.7.2
+======
+
+* Expose the robot adapter name as `robot.adapterName`.
+
 v2.7.1
 ======
 

@@ -14,6 +14,7 @@ googleNameForName = (name) ->
 
 module.exports = (robot) ->
   robot.hear /hangouts|gtalk|gmail|google maps?|android|chromecast|chrome|google music|gmusic/ig, (msg) ->
+    return
     return if robot.name == msg.message.user.name
     return if /^</.test(msg.message.text)
     return if /^http/.test(msg.message.text)

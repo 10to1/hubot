@@ -59,6 +59,7 @@ class Robot
 
     @loadAdapter adapterPath, adapter
 
+    @adapterName   = adapter
     @errorHandlers = []
 
     @on 'error', (err, msg) =>
@@ -211,7 +212,7 @@ class Robot
   loadFile: (path, file) ->
     ext  = Path.extname file
     full = Path.join path, Path.basename(file, ext)
-    if ext is '.coffee' or ext is '.js'
+    if require.extensions[ext]
       try
         require(full) @
         @parseHelp Path.join(path, file)

@@ -21,14 +21,21 @@
 # Author:
 #   inferis
 
-URL = "http://hummercatch.herokuapp.com/hubot"
+URL = "http://tto-foodz.herokuapp.com/hubot"
 
 cronJob         = require('cron').CronJob
 
 catchRequest = (message, path, action, options, callback) ->
-
+  console.log "Making the call"
   message.http("#{URL}#{path}").query(options)[action]() (err, res, body) ->
     callback(err,res,body)
+
+postRequest = (msg, path, params, callback) ->
+  stringParams = JSON.stringify params
+  msg.http("#{URL}#{path}")
+    .headers("Content-type": "application/json",'Accept': 'application/json')
+    .post(stringParams) (err, res, body) ->
+      callback(err, res, body)
 
 module.exports = (robot) ->
 
@@ -141,11 +148,6 @@ module.exports = (robot) ->
     else
       broodje = msg.match[5]
     handler.order_broodje_for_today msg.match[2], broodje
-    catchRequest msg, "/order", "post", {order: broodje}, (err, res, body) ->
-      if res.statusCode is 200
-        # msg.send "#{body}"
-      else
-        # msg.reply "Kon niet parsen: #{err}"
 
   robot.respond /broodjes/i, (msg) ->
     handler = new Sandwicher robot, msg
@@ -183,6 +185,8 @@ class SandwichBrain
     @data.forgotten["Nick Looijmans"] = "FFING CANADIAN"
     @data.forgotten["Tim Van Damme"] = "TIMMIE!"
     @data.forgotten["Tom Adriaenssen"] = "DOTZERS"
+    @data.forgotten["Evert Van den Bruel"] = "BEVERT"
+    @data.forgotten["Jelle Vandebeeck"] = "jelle"
 
   all_broodjes_for_user: (user) ->
     result = [] unless user
@@ -209,6 +213,11 @@ class SandwichBrain
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
+    postRequest @msg, "/orders", {username: user, metadata: broodje}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+      else
+        console.log "Error: #{err}"
     @data.broodjes[@today][user] = broodje
 
   broodjes_for_today: ->
@@ -216,11 +225,20 @@ class SandwichBrain
 
   # TODO: Makes this set null to all users so the cron doesn't complain anymore
   no_broodjes_for_today: ->
-    @data.broodjes[@today] = null
+    @data.broodjes[@today] = {}
+    for own key, user of @data.users
+      name = user.name
+      unless ((name is "HUBOT") || (@is_forgotten(name)))
+        @no_broodjes_for_today user
 
   no_broodje_for_today: (user) ->
     old_bun = @data.broodjes[@today][user]
     @data.broodjes[@today][user] = null
+    postRequest @msg, "/orders", {username: user, delete: "X"}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+      else
+        console.log "Error: #{err}"
     old_bun
 
   sandwichlessUsers: ->
@@ -271,11 +289,11 @@ class Sandwicher
 
     @msg.send "Geen broodjes vandaag. Op naar de Quick!"
 
-    contains_broodjes = no
-    for name, broodje of broodjes
-        if broodje != null
-          contains_broodjes = yes
-          @msg.send "Hey #{name}, uw broodje is geannuleerd! #fdj"
+    # contains_broodjes = no
+    # for name, broodje of broodjes
+    #     if broodje != null
+    #       contains_broodjes = yes
+    #       @msg.send "Hey #{name}, uw broodje is geannuleerd! #fdj"
 
     brain.no_broodjes_for_today()
 

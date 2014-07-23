@@ -50,7 +50,25 @@ wtfs = ["http://i.imgur.com/On3fuEZ.jpg",
 "http://i.imgur.com/BOa7ZKy.jpg",
 "http://i.imgur.com/N8ojcdY.jpg",
 "http://i.imgur.com/HKbi3G1.jpg",
-"http://i.imgur.com/VEmrUp6.jpg"]
+"http://i.imgur.com/VEmrUp6.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird6.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird2.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird3.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird4.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird5.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird7.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird8.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird9.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird19.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird10.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird11.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird12.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird13.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird14.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird15.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird17.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird18.jpg",
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird1.jpg"]
 
 module.exports = (robot) ->
   robot.hear /unexplainable/i, (msg) ->

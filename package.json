@@ -33,6 +33,7 @@
         "time": "*",
         "cron": "*",
         "soupselect": "0.2.0",
+        "htmlparser": "1.7.7",
         "hubot-kato": "0.0.6",
         "ntwitter": "0.5.0",
         "hubot-plusplus": "1.0.x",

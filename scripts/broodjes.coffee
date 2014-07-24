@@ -328,8 +328,10 @@ class Sandwicher
         @msg.send "Niemand heeft honger precies, er zijn nog geen broodjes besteld vandaag."
 
   order_all_broodjes: (send) ->
-    @msg.send "NOT ORDERING THE BROODJES"
-    return
+    return unless process.env.BROODJES_ENABLED
+    broodjes = brain.broodjes_for_today()
+    unless broodjes.length
+      @msg.send "Geen broodjes vandaag, dan doe ik ook de moeite niet"
     mail = @_generate_mail()
     if mail? and mail.length > 0
       if send

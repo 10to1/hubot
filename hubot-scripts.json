@@ -39,4 +39,5 @@
  "ackbar.coffee",
  "9gag.coffee",
  "polite.coffee",
- "mtg.coffee"]
+ "mtg.coffee",
+ "hubot-say.coffee"]

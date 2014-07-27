@@ -225,11 +225,16 @@ class SandwichBrain
 
   # TODO: Makes this set null to all users so the cron doesn't complain anymore
   no_broodjes_for_today: ->
+    postRequest @msg, "/orders", {all_users: "X", delete: "X"}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+      else
+        console.log "Error: #{err}"
     @data.broodjes[@today] = {}
     for own key, user of @data.users
       name = user.name
       unless ((name is "HUBOT") || (@is_forgotten(name)))
-        @no_broodjes_for_today user
+        @data.broodjes[@today][user] = null
 
   no_broodje_for_today: (user) ->
     old_bun = @data.broodjes[@today][user]

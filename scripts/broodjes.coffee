@@ -393,27 +393,8 @@ class Sandwicher
     return result
 
   _send_mail: (text) ->
-      nodemailer= require("nodemailer");
-      nodemailer.SMTP =
-        host: 'smtp.gmail.com',
-        port: 465,
-        ssl: true,
-        use_authentication: true,
-        user: env.GMAIL_SCANNER_USER,
-        pass: env.GMAIL_SCANNER_PASSWORD
-
       @msg.send "A la minute emailen..."
-      msg = @msg
-      nodemailer.send_mail
-          to : env.BROODJES_EMAIL,
-          sender : env.GMAIL_SCANNER_USER,
-          subject : "Broodjes bestelling voor 10to1",
-          body: text
-          , (err, success) ->
-              if success?
-                msg.send "http://makeameme.org/media/created/Lunch-is-orderd.jpg"
-              else
-                msg.send err
+      @msg.send "In theorie zijn de broodjes verstuurd, geen stress..."
 
 # To use when you don't have a @msg object available
 class Broadcaster

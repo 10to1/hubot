@@ -22,6 +22,7 @@
 #   inferis
 
 URL = "http://tto-foodz.herokuapp.com/hubot"
+# URL = "http://foodz.dev/hubot"
 
 cronJob         = require('cron').CronJob
 
@@ -128,7 +129,8 @@ module.exports = (robot) ->
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
     catchRequest msg, "/food", "get", {}, (err, res, body) ->
       if res.statusCode is 200
-        msg.send body
+        for food in JSON.parse(body)
+          msg.send "#{food.name}"
       else
         msg.reply "Kan geen broodjes vinden :("
 
@@ -150,8 +152,12 @@ module.exports = (robot) ->
     handler.order_broodje_for_today msg.match[2], broodje
 
   robot.respond /broodjes/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.show_all_broodjes()
+    catchRequest msg, "/orders", "get", {}, (err, res, body) ->
+      if res.statusCode is 200
+        for order in JSON.parse(body)
+          msg.send "#{order.username}: #{order.metadata}"
+      else
+        msg.send "Te ingewikkelde bestelling (status: #{res.statusCode})"
 
   robot.respond /bestel(?:\s+alle)?\s+broodjes(!!!?)?$/i, (msg) ->
     handler = new Sandwicher robot, msg

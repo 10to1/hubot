@@ -38,6 +38,13 @@ postRequest = (msg, path, params, callback) ->
     .post(stringParams) (err, res, body) ->
       callback(err, res, body)
 
+name_or_me = (testname, msg) ->
+  if !testname? ||  testname == "" || /^(?:mij|)$/i.test(testname)
+    name = msg.message.user.name
+  else
+    name = testname
+  return name
+
 module.exports = (robot) ->
 
   rooms = ["271712"]

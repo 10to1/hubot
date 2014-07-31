@@ -161,7 +161,12 @@ module.exports = (robot) ->
       broodje = handler.find_special_broodje msg.match[5]
     else
       broodje = msg.match[5]
-    handler.order_broodje_for_today msg.match[2], broodje
+    postRequest msg, "/orders", {username: name_or_me(msg.match[2], msg), metadata: broodje}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+        handler.order_broodje_for_today msg.match[2], broodje
+      else
+        console.log "Error: #{err}"
 
   robot.respond /broodjes/i, (msg) ->
     catchRequest msg, "/orders", "get", {}, (err, res, body) ->
@@ -231,11 +236,6 @@ class SandwichBrain
 
   order_broodje_for_today: (user, broodje) ->
     @unforget user
-    postRequest @msg, "/orders", {username: user, metadata: broodje}, (err, res, body) ->
-      if res.statusCode is 200
-        console.log "OK: #{body}"
-      else
-        console.log "Error: #{err}"
     @data.broodjes[@today][user] = broodje
 
   broodjes_for_today: ->

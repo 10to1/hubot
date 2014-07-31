@@ -135,8 +135,13 @@ module.exports = (robot) ->
         msg.reply "Kan geen broodjes vinden :("
 
   robot.respond /(vandaag\s+)?geen\s+broodjes/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.remove_all_broodjes_for_today()
+    postRequest msg, "/orders", {all_users: "X", delete: "X"}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+        handler = new Sandwicher robot, msg
+        handler.remove_all_broodjes_for_today()
+      else
+        console.log "Error: #{err}"
 
   robot.respond /voor\s+(.+?)\s+geen\s+broodje|geen\s+broodje\s+voor\s+(.+?)?/i, (msg) ->
     handler = new Sandwicher robot, msg
@@ -231,11 +236,6 @@ class SandwichBrain
 
   # TODO: Makes this set null to all users so the cron doesn't complain anymore
   no_broodjes_for_today: ->
-    postRequest @msg, "/orders", {all_users: "X", delete: "X"}, (err, res, body) ->
-      if res.statusCode is 200
-        console.log "OK: #{body}"
-      else
-        console.log "Error: #{err}"
     @data.broodjes[@today] = {}
     for own key, user of @data.users
       name = user.name

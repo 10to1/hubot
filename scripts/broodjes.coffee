@@ -151,8 +151,14 @@ module.exports = (robot) ->
         console.log "Error: #{err}"
 
   robot.respond /voor\s+(.+?)\s+geen\s+broodje|geen\s+broodje\s+voor\s+(.+?)?/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.remove_broodje_for_today msg.match[1] ? msg.match[2]
+    user = name_or_me(msg.match[1] ? msg.match[2], msg)
+    postRequest msg, "/orders", {username: user, delete: "X"}, (err, res, body) ->
+      if res.statusCode is 200
+        console.log "OK: #{body}"
+        handler = new Sandwicher robot, msg
+        handler.remove_broodje_for_today msg.match[1] ? msg.match[2]
+      else
+        console.log "Error: #{err}"
 
   # test: http://www.rubular.com/r/yAApRvQH5D
   robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(?:(?:\s+voor)?\s+((?!(?:ne|een|iets)).*?))?(\s+maa?r?)?\s+(een|ne|iets)\s+(.*)/i, (msg) ->
@@ -252,11 +258,6 @@ class SandwichBrain
   no_broodje_for_today: (user) ->
     old_bun = @data.broodjes[@today][user]
     @data.broodjes[@today][user] = null
-    postRequest @msg, "/orders", {username: user, delete: "X"}, (err, res, body) ->
-      if res.statusCode is 200
-        console.log "OK: #{body}"
-      else
-        console.log "Error: #{err}"
     old_bun
 
   sandwichlessUsers: ->

@@ -53,63 +53,54 @@ module.exports = (robot) ->
 
   broadcast = new Broadcaster robot, rooms[0]
 
+  poke = (msg, reply) ->
+    catchRequest robot, "/users/sandwichless", "get", {}, (err, response, body) ->
+      if response.statusCode is 200
+        sandwichless = JSON.parse(body)
+        if sandwichless.length
+          msg.send "#{sandwichless.join(', ')} #{reply}"
+        else
+          msg.send "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt."
+      else
+        msg.send "Ik ben bang dat er iets mis zal gaan bij het bestellen van de broodjes. Wie kijkt dat eens na?"
+
   reminderJob = new cronJob '0 50 9 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers()
-                  if sandwichlessUsers && sandwichlessUsers.length
-                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 10 min verstuur ik de fax voor de broodjes!"
-                  else
-                    broadcast.send "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt. Binnen 10 min verstuur ik de fax voor de broodjes."
+                  poke broadcast, "Binnen 10 min verstuur ik de fax voor de broodjes!"
                 null
                 true
                 'Europe/Brussels'
   reminderJob2 = new cronJob '0 55 9 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers()
-                  if sandwichlessUsers && sandwichlessUsers.length
-                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
+                  poke broadcast "Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
                 null
                 true
                 'Europe/Brussels'
 
   reminderJob3 = new cronJob '0 40 9 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers()
-                  if sandwichlessUsers && sandwichlessUsers.length
-                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 20 min verstuur ik de fax voor de broodjes!"
+                  poke broadcast, "Binnen 20 min verstuur ik de fax voor de broodjes!"
                 null
                 true
                 'Europe/Brussels'
 
   reminderJob4 = new cronJob '0 58 9 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers()
-                  if sandwichlessUsers && sandwichlessUsers.length
-                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
+                  poke broadcast, "Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
                 null
                 true
                 'Europe/Brussels'
 
   reminderJob5 = new cronJob '0 59 9 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers()
-                  if sandwichlessUsers && sandwichlessUsers.length
-                    broadcast.send "#{sandwichlessUsers.join(', ')} Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
+                  poke broadcast, "Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
                 null
                 true
                 'Europe/Brussels'
 
   reminderJob6 = new cronJob '15 59 9 * * 1-5',
                 ->
-                  brain = new SandwichBrain robot, null
-                  sandwichlessUsers = brain.sandwichlessUsers()
-                  if sandwichlessUsers && sandwichlessUsers.length
-                    broadcast.send "#{sandwichlessUsers.join(', ')} Ik *denk* dat ge te laat gaat zijn."
+                  poke broadcast, "Ik *denk* dat ge te laat gaat zijn."
                 null
                 true
                 'Europe/Brussels'
@@ -126,8 +117,7 @@ module.exports = (robot) ->
                 'Europe/Brussels'
 
   robot.respond /iedereen besteld/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.show_not_ordered()
+    poke msg, "moeten nog bestellen"
 
   robot.respond /(geen broodje meer voor|nooit meer iets voor)\s+(.+)/i, (msg) ->
     handler = new Sandwicher robot, msg

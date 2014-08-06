@@ -24,7 +24,10 @@
 URL = "http://tto-foodz.herokuapp.com/hubot"
 # URL = "http://foodz.dev/hubot"
 
-cronJob         = require('cron').CronJob
+cronJob    = require('cron').CronJob
+Joe        = require('./joe')
+HttpClient = require('scoped-http-client');
+joe        = new Joe(URL, HttpClient);
 
 catchRequest = (message, path, action, options, callback) ->
   console.log "Making the call"
@@ -54,16 +57,14 @@ module.exports = (robot) ->
   broadcast = new Broadcaster robot, rooms[0]
 
   poke = (msg, reply) ->
-    catchRequest robot, "/users/sandwichless", "get", {}, (err, response, body) ->
-      if response.statusCode is 200
-        sandwichless = JSON.parse(body)
-        if sandwichless.length
-          msg.send "#{sandwichless.join(', ')} #{reply}"
+    joe.users_without_orders (error, users) ->
+      if error
+        msg.send "Ik ben bang dat er iets mis zal gaan bij het bestellen van de broodjes. Wie kijkt dat eens na? (#{error})"
+      else
+        if users.length
+          msg.send "#{users.join(', ')} #{reply}"
         else
           msg.send "Iedereen heeft zijn broodje al besteld, zeg. Goed gewerkt."
-      else
-        msg.send "Ik ben bang dat er iets mis zal gaan bij het bestellen van de broodjes. Wie kijkt dat eens na?"
-
 
   cron_jobs = {
     '0 40 9 * * 1-5' : "Binnen 20 min bestel ik de broodjes!",

@@ -25,9 +25,9 @@ URL = "http://tto-foodz.herokuapp.com/hubot"
 # URL = "http://foodz.dev/hubot"
 
 cronJob    = require('cron').CronJob
-Joe        = require('./joe')
-HttpClient = require('scoped-http-client');
-joe        = new Joe(URL, HttpClient);
+HttpClient = require 'scoped-http-client'
+Joe        = require('../joe')
+joe        = new Joe(URL, HttpClient)
 
 catchRequest = (message, path, action, options, callback) ->
   console.log "Making the call"

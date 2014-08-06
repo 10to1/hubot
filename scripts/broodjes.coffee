@@ -64,48 +64,18 @@ module.exports = (robot) ->
       else
         msg.send "Ik ben bang dat er iets mis zal gaan bij het bestellen van de broodjes. Wie kijkt dat eens na?"
 
-  reminderJob = new cronJob '0 50 9 * * 1-5',
-                ->
-                  poke broadcast, "Binnen 10 min verstuur ik de fax voor de broodjes!"
-                null
-                true
-                'Europe/Brussels'
-  reminderJob2 = new cronJob '0 55 9 * * 1-5',
-                ->
-                  poke broadcast "Binnen 5 min verstuur ik de fax voor de broodjes! Ge moet rap zijn!"
-                null
-                true
-                'Europe/Brussels'
 
-  reminderJob3 = new cronJob '0 40 9 * * 1-5',
-                ->
-                  poke broadcast, "Binnen 20 min verstuur ik de fax voor de broodjes!"
-                null
-                true
-                'Europe/Brussels'
-
-  reminderJob4 = new cronJob '0 58 9 * * 1-5',
-                ->
-                  poke broadcast, "Binnen 2 min verstuur ik de fax voor de broodjes! Typ rap nog iets!"
-                null
-                true
-                'Europe/Brussels'
-
-  reminderJob5 = new cronJob '0 59 9 * * 1-5',
-                ->
-                  poke broadcast, "Binnen 1 min verstuur ik de fax voor de broodjes! RAPPER TYPEN!!"
-                null
-                true
-                'Europe/Brussels'
-
-  reminderJob6 = new cronJob '15 59 9 * * 1-5',
-                ->
-                  poke broadcast, "Ik *denk* dat ge te laat gaat zijn."
-                null
-                true
-                'Europe/Brussels'
-
-
+  cron_jobs = {
+    '0 40 9 * * 1-5' : "Binnen 20 min bestel ik de broodjes!",
+    '0 50 9 * * 1-5' : "Binnen 10 min bestel ik de broodjes!",
+    '0 55 9 * * 1-5' : "Binnen 5 min bestel ik de broodjes!",
+    '0 59 9 * * 1-5' : "Binnen 1 minuut bestel ik de broodjes!",
+    '15 59 9 * * 1-5' : "Ik denk dat je te laat gaat zijn!"
+  }
+  for time, message of cron_jobs
+    poker = ->
+      poke broadcast, message
+    new cronJob time, poker, null, true, 'Europe/Brussels'
 
   bestelJob = new cronJob '0 0 10 * * 1-5',
                 ->

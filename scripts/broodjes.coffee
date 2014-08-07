@@ -114,10 +114,10 @@ module.exports = (robot) ->
     user = name_or_me(msg.match[2], msg)
     postRequest msg, "/orders", {username: user, metadata: broodje}, (err, res, body) ->
       if res.statusCode is 200
-        if name == @msg.message.user.name
-          msg.send "#{@msg.message.user.name} gaat straks een #{broodje} eten"
+        if user == msg.message.user.name
+          msg.send "#{user} gaat straks een #{broodje} eten"
         else
-          msg.send "#{@msg.message.user.name} zorgt ervoor dat #{user} straks een #{broodje} kan eten"
+          msg.send "#{msg.message.user.name} zorgt ervoor dat #{user} straks een #{broodje} kan eten"
       else
         msg.send "#{user}, ik denk niet dat een #{broodje} zo'n goed idee is."
 

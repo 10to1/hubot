@@ -27,7 +27,7 @@ URL = "http://tto-foodz.herokuapp.com/hubot"
 cronJob    = require('cron').CronJob
 HttpClient = require 'scoped-http-client'
 Joe        = require('../joe')
-joe        = new Joe(URL, HttpClient)
+joe        = new Joe("http://tto-foodz.herokuapp.com", HttpClient)
 
 catchRequest = (message, path, action, options, callback) ->
   console.log "Making the call"
@@ -77,15 +77,6 @@ module.exports = (robot) ->
     poker = ->
       poke broadcast, message
     new cronJob time, poker, null, true, 'Europe/Brussels'
-
-  bestelJob = new cronJob '0 0 10 * * 1-5',
-                ->
-                  broadcast.send "Good news everyone! Ik ga de broodjes bestellen!"
-                  handler = new Sandwicher robot, broadcast
-                  handler.order_all_broodjes true
-                null
-                true
-                'Europe/Brussels'
 
   robot.respond /iedereen besteld/i, (msg) ->
     poke msg, "moeten nog bestellen"

@@ -82,8 +82,8 @@ module.exports = (robot) ->
     poke msg, "moeten nog bestellen"
 
   robot.respond /(geen broodje meer voor|nooit meer iets voor)\s+(.+)/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.forget msg.match[2]
+    name = msg.match[2]
+    msg.send "Binnen 3 dagen ben ik #{name} wel vergeten."
 
   robot.respond /welke\s+broodjes(?:\s+zijn\s+er)?\??/i, (msg) ->
     catchRequest msg, "/food", "get", {}, (err, res, body) ->
@@ -96,35 +96,30 @@ module.exports = (robot) ->
   robot.respond /(vandaag\s+)?geen\s+broodjes/i, (msg) ->
     postRequest msg, "/orders", {all_users: "X", delete: "X"}, (err, res, body) ->
       if res.statusCode is 200
-        console.log "OK: #{body}"
-        handler = new Sandwicher robot, msg
-        handler.remove_all_broodjes_for_today()
+        msg.send "Geen broodjes vandaag. Op naar de Quick!"
       else
-        console.log "Error: #{err}"
+        msg.send "Ik ga toch bestellen, jullie moeten iets gezonder eten!"
 
   robot.respond /voor\s+(.+?)\s+geen\s+broodje|geen\s+broodje\s+voor\s+(.+?)?/i, (msg) ->
     user = name_or_me(msg.match[1] ? msg.match[2], msg)
     postRequest msg, "/orders", {username: user, delete: "X"}, (err, res, body) ->
       if res.statusCode is 200
-        console.log "OK: #{body}"
-        handler = new Sandwicher robot, msg
-        handler.remove_broodje_for_today msg.match[1] ? msg.match[2]
+        msg.send "#{user} had jij besteld? Ik ben het al vergeten."
       else
-        console.log "Error: #{err}"
+        msg.send "#{user}, ik vind dat je wel iets moet eten!"
 
   # test: http://www.rubular.com/r/yAApRvQH5D
   robot.respond /(doe|voor|bestel|bespreek|bezorg|ontbiedt|reserveer|eis|onderspreek)(?:(?:\s+voor)?\s+((?!(?:ne|een|iets)).*?))?(\s+maa?r?)?\s+(een|ne|iets)\s+(.*)/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    if (msg.match[4] == "iets")
-      broodje = handler.find_special_broodje msg.match[5]
-    else
-      broodje = msg.match[5]
-    postRequest msg, "/orders", {username: name_or_me(msg.match[2], msg), metadata: broodje}, (err, res, body) ->
+    broodje = msg.match[5]
+    user = name_or_me(msg.match[2], msg)
+    postRequest msg, "/orders", {username: user, metadata: broodje}, (err, res, body) ->
       if res.statusCode is 200
-        console.log "OK: #{body}"
-        handler.order_broodje_for_today msg.match[2], broodje
+        if name == @msg.message.user.name
+          msg.send "#{@msg.message.user.name} gaat straks een #{broodje} eten"
+        else
+          msg.send "#{@msg.message.user.name} zorgt ervoor dat #{user} straks een #{broodje} kan eten"
       else
-        console.log "Error: #{err}"
+        msg.send "#{user}, ik denk niet dat een #{broodje} zo'n goed idee is."
 
   robot.respond /broodjes/i, (msg) ->
     catchRequest msg, "/orders", "get", {}, (err, res, body) ->
@@ -135,8 +130,7 @@ module.exports = (robot) ->
         msg.send "Te ingewikkelde bestelling (status: #{res.statusCode})"
 
   robot.respond /bestel(?:\s+alle)?\s+broodjes(!!!?)?$/i, (msg) ->
-    handler = new Sandwicher robot, msg
-    handler.order_all_broodjes msg.match[1]?
+    msg.send "Geen stress, dat komt in orde, rond 10u."
 
 #############################################
 

@@ -4,25 +4,13 @@ module.exports = class Joe
     @client = http_client.create(url)
 
   orders: (callback) ->
-    @get "hubot/orders", (error, body) ->
-      if error
-        callback "Error fetching orders: #{error}"
-      else
-        callback null, JSON.parse(body)
+    @get "hubot/orders", callback
 
   users_without_orders: (callback) ->
-    @get "hubot/users/sandwichless", (error, body) ->
-      if error
-        callback "Error fetching orders: #{error}"
-      else
-        callback null, JSON.parse(body)
+    @get "hubot/users/sandwichless", callback
 
   all_food: (callback) ->
-    @get "hubot/food", (error, body) ->
-      if error
-        callback "Error fetching available food: #{error}"
-      else
-        callback null, JSON.parse(body)
+    @get "hubot/food", callback
 
   cancel_order: (username, callback) ->
     @post "hubot/orders", {username: username, delete: "X"}, callback
@@ -37,9 +25,9 @@ module.exports = class Joe
     @client.scope path, (cli) ->
       cli.get() (error, response, body) ->
         if response.statusCode is 200
-          callback(null, body)
+          callback null, JSON.parse(body)
         else
-          callback(error, null)
+          callback error, null
 
   post: (path, params, callback) ->
     stringParams = JSON.stringify params

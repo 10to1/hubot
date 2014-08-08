@@ -74,9 +74,10 @@ module.exports = (robot) ->
     '15 59 9 * * 1-5' : "Ik denk dat je te laat gaat zijn!"
   }
   for time, message of cron_jobs
-    poker = ->
-      poke broadcast, message
-    new cronJob time, poker, null, true, 'Europe/Brussels'
+    do (time, message) ->
+      poker = ->
+        poke broadcast, message
+      new cronJob time, poker, null, true, 'Europe/Brussels'
 
   robot.respond /iedereen besteld/i, (msg) ->
     poke msg, "moeten nog bestellen"

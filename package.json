@@ -43,7 +43,8 @@
         "hubot-angry": "pjaspers/hubot-angry",
         "hubot-reaction": ">= 0.0.6",
         "hubot-euphemism": ">= 1.0.1",
-        "hubot-bobsisms": "pjaspers/hubot-bobsisms"
+        "hubot-bobsisms": "pjaspers/hubot-bobsisms",
+        "hubot-motivate": ">= 0.0.0"
     },
     "engines": {
         "node": ">= 0.8.x",

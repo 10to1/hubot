@@ -68,7 +68,8 @@ wtfs = ["http://i.imgur.com/On3fuEZ.jpg",
 "http://www.sadanduseless.com/wp-content/uploads/2014/05/weird15.jpg",
 "http://www.sadanduseless.com/wp-content/uploads/2014/05/weird17.jpg",
 "http://www.sadanduseless.com/wp-content/uploads/2014/05/weird18.jpg",
-"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird1.jpg"]
+"http://www.sadanduseless.com/wp-content/uploads/2014/05/weird1.jpg",
+"http://www.tattooartists.org/Images/FullSize/000099000/Img99561_july_069.jpg"]
 
 module.exports = (robot) ->
   robot.hear /unexplainable/i, (msg) ->

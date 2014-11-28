@@ -44,7 +44,12 @@
         "hubot-reaction": ">= 0.0.6",
         "hubot-euphemism": ">= 1.0.1",
         "hubot-bobsisms": "pjaspers/hubot-bobsisms",
-        "hubot-motivate": ">= 0.0.0"
+        "hubot-motivate": ">= 0.0.0",
+        "hubot-fliptable": "1.2.0",
+        "hubot-ambush": "0.0.2",
+        "hubot-shipping-forecast": "1.0.0",
+        "hubot-qr": "0.0.2",
+        "hubot-thesimpsons": "1.1.2"
     },
     "engines": {
         "node": ">= 0.8.x",

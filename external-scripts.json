@@ -6,5 +6,10 @@
  "hubot-reaction",
  "hubot-euphemism",
  "hubot-bobsisms",
- "hubot-motivate"
+ "hubot-motivate",
+ "hubot-fliptable",
+ "hubot-ambush",
+ "hubot-shipping-forecast",
+ "hubot-qr",
+ "hubot-thesimpsons"
 ]

@@ -73,6 +73,7 @@ module.exports = (robot) ->
     '0 59 9 * * 1-5' : "Binnen 1 minuut bestel ik de broodjes!",
     '15 59 9 * * 1-5' : "Ik denk dat je te laat gaat zijn!"
   }
+  cron_jobs = {} # No longer using this.
   for time, message of cron_jobs
     do (time, message) ->
       poker = ->

@@ -1,62 +1,63 @@
 {
-    "name": "hubot",
-    "version": "2.7.5",
-    "author": "hubot",
-    "keywords": [
-        "github",
-        "hubot",
-        "campfire",
-        "bot"
-    ],
-    "description": "A simple helpful robot for your Company",
-    "licenses": [{
-        "type": "MIT",
-        "url": "https://raw.github.com/github/hubot/master/LICENSE"
-    }],
-
-    "repository" : {
-        "type": "git",
-        "url": "https://github.com/github/hubot.git"
-    },
-    "dependencies": {
-        "coffee-script": "1.6.3",
-        "optparse": "1.0.4",
-        "scoped-http-client": "0.9.8",
-        "log": "1.4.0",
-        "express": "3.3.4",
-        "hubot-scripts": ">= 2.5.0 < 3.0.0",
-        "redis": "0.8.4",
-        "sprintf": "0.1.1",
-        "nodemailer": "0.5.2",
-        "underscore": "1.5.1",
-        "url": "0.7.9",
-        "time": "*",
-        "cron": "*",
-        "soupselect": "0.2.0",
-        "htmlparser": "1.7.7",
-        "hubot-kato": "0.0.6",
-        "ntwitter": "0.5.0",
-        "hubot-plusplus": "1.0.x",
-        "hubot-worldcup": "hubot-scripts/hubot-worldcup",
-        "hubot-soon": ">= 1.0.0",
-        "hubot-business-cat": "1.0.x",
-        "hubot-angry": "pjaspers/hubot-angry",
-        "hubot-reaction": ">= 0.0.6",
-        "hubot-euphemism": ">= 1.0.1",
-        "hubot-bobsisms": "pjaspers/hubot-bobsisms",
-        "hubot-motivate": ">= 0.0.0",
-        "hubot-fliptable": "1.2.0",
-        "hubot-ambush": "0.0.2",
-        "hubot-shipping-forecast": "1.0.0",
-        "hubot-qr": "0.0.2",
-        "hubot-thesimpsons": "1.1.2"
-    },
-    "engines": {
-        "node": ">= 0.8.x",
-        "npm": ">= 1.1.x"
-    },
-    "main": "./index",
-    "bin": {
-        "hubot": "./bin/hubot"
+  "name": "hubot",
+  "version": "2.7.5",
+  "author": "hubot",
+  "keywords": [
+    "github",
+    "hubot",
+    "campfire",
+    "bot"
+  ],
+  "description": "A simple helpful robot for your Company",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/github/hubot/master/LICENSE"
     }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/github/hubot.git"
+  },
+  "dependencies": {
+    "coffee-script": "1.6.3",
+    "cron": "*",
+    "express": "3.3.4",
+    "htmlparser": "1.7.7",
+    "hubot-ambush": "0.0.2",
+    "hubot-angry": "pjaspers/hubot-angry",
+    "hubot-bobsisms": "pjaspers/hubot-bobsisms",
+    "hubot-business-cat": "1.0.x",
+    "hubot-euphemism": ">= 1.0.1",
+    "hubot-fliptable": "1.2.0",
+    "hubot-irc": "^0.2.7",
+    "hubot-motivate": ">= 0.0.0",
+    "hubot-plusplus": "1.0.x",
+    "hubot-qr": "0.0.2",
+    "hubot-reaction": ">= 0.0.6",
+    "hubot-scripts": ">= 2.5.0 < 3.0.0",
+    "hubot-shipping-forecast": "1.0.0",
+    "hubot-soon": ">= 1.0.0",
+    "hubot-thesimpsons": "1.1.2",
+    "hubot-worldcup": "hubot-scripts/hubot-worldcup",
+    "log": "1.4.0",
+    "nodemailer": "0.5.2",
+    "ntwitter": "0.5.0",
+    "optparse": "1.0.4",
+    "redis": "0.8.4",
+    "scoped-http-client": "0.9.8",
+    "soupselect": "0.2.0",
+    "sprintf": "0.1.1",
+    "time": "*",
+    "underscore": "1.5.1",
+    "url": "0.7.9"
+  },
+  "engines": {
+    "node": ">= 0.8.x",
+    "npm": ">= 1.1.x"
+  },
+  "main": "./index",
+  "bin": {
+    "hubot": "./bin/hubot"
+  }
 }

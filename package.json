@@ -23,6 +23,7 @@
     "coffee-script": "1.6.3",
     "cron": "*",
     "express": "3.3.4",
+    "hubot": "2.11.0",
     "htmlparser": "1.7.7",
     "hubot-ambush": "0.0.2",
     "hubot-angry": "pjaspers/hubot-angry",

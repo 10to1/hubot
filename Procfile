@@ -1,1 +1,1 @@
-web: bin/hubot -a irc -n hubob
+web: bin/hubot -a irc -n meechum

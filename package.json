@@ -32,6 +32,7 @@
     "hubot-scripts": "^2.5.16",
     "hubot-shipit": "^0.1.2",
     "hubot-youtube": "^0.1.2",
+    "hubot-memegen": "^0.2.0",
     "hubot-github-identity": "^0.9.1",
     "hubot-github-issues": "^0.1.1"
   },

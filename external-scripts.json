@@ -24,4 +24,6 @@
  "hubot-youtube",
  "hubot-github-identity",
  "hubot-memegen",
- "hubot-github-issues"]
+ "hubot-github-issues",
+ "hubot-checkle"
+]

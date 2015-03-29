@@ -25,5 +25,6 @@
  "hubot-memegen",
  "hubot-github-issues",
  "hubot-checkle",
+ "hubot-mealz",
  "hubot-slack-attachment"
 ]

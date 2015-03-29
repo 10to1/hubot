@@ -26,5 +26,8 @@
  "hubot-github-issues",
  "hubot-checkle",
  "hubot-mealz",
- "hubot-slack-attachment"
+ "hubot-slack-attachment",
+ "hubot-thank-you",
+ "hubot-darts",
+ "hubot-explainshell"
 ]

@@ -19,6 +19,9 @@
 
 module.exports = (robot) ->
 
+  robot.hear /cue @?(lewis|bowling)/, (msg) ->
+    sendEpicGifForName("lewis", msg)
+
   robot.hear /cue @?(piet|junkiesxl)/, (msg) ->
     sendEpicGifForName("pjaspers", msg)
 
@@ -54,6 +57,7 @@ module.exports = (robot) ->
 
 epicGifForName = (name) ->
   hash = {
+    lewis: "https://pile.pjaspers.com/lewis.gif",
     pjaspers: "http://f.cl.ly/items/2w3V2T290K1d2x3c1O2c/animated-2012-09-14_14h-36m-39s.gif",
     inferis: "http://f.cl.ly/items/3q2Z1C430G2l1o13131b/animated-2012-09-13_16h-20m-29s.gif",
     fousa: "http://cl.ly/image/0L0b2v1J3F47/animated-2012-09-14_10h-19m-23s.gif",

@@ -19,7 +19,7 @@
 
 module.exports = (robot) ->
 
-  robot.hear /cue @?(lewis|bowling)/, (msg) ->
+  robot.hear /cue @?(lewis|bowling|bowlboy|delul)/, (msg) ->
     sendEpicGifForName("lewis", msg)
 
   robot.hear /cue @?(piet|junkiesxl)/, (msg) ->

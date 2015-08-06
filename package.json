@@ -40,7 +40,8 @@
     "hubot-soon": "1.0.0",
     "hubot-thank-you": "0.0.3",
     "hubot-thesimpsons": "1.1.2",
-    "hubot-worldcup": "0.4.5"
+    "hubot-worldcup": "0.4.5",
+    "lodash": "3.10.1"
   },
   "engines": {
     "node": "0.10.x"

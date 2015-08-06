@@ -56,7 +56,7 @@ module.exports = (robot) ->
     sendEpicGifForName("koekoek", msg)
 
   robot.hear /cue @?(tentoone|friends|team|jebus)/, (msg) ->
-    sendEpicGifForName("koekoek", msg)
+    sendEpicGifForName("tentoone", msg)
 
 epicGifForName = (name) ->
   hash = {

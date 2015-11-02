@@ -39,6 +39,7 @@
     "hubot-slack-attachment": "^1.0.1",
     "hubot-soon": "1.0.0",
     "hubot-thank-you": "0.0.3",
+    "hubot-the-visual-aid": "pjaspers/hubot-the-visual-aid",
     "hubot-thesimpsons": "1.1.2",
     "hubot-worldcup": "0.4.5",
     "lodash": "3.10.1"

@@ -28,5 +28,6 @@
  "hubot-slack-attachment",
  "hubot-thank-you",
  "hubot-darts",
- "hubot-explainshell"
+ "hubot-explainshell",
+ "hubot-the-visual-aid"
 ]
